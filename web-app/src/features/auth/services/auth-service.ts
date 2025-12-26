@@ -10,11 +10,11 @@ export class SimpleAuthService implements AuthService {
   private readonly sessionSecret: string;
 
   constructor() {
-    this.password = ENV.AUTH_PASSWORD;
-    this.sessionSecret = ENV.AUTH_SESSION_SECRET;
+    this.password = ENV.AUTH_PASSWORD || 'dev-password';
+    this.sessionSecret = ENV.AUTH_SESSION_SECRET || 'dev-session-secret';
     
-    if (!this.password || !this.sessionSecret) {
-      throw new Error('AUTH_PASSWORD and AUTH_SESSION_SECRET must be configured');
+    if (!ENV.AUTH_PASSWORD || !ENV.AUTH_SESSION_SECRET) {
+      console.warn('AUTH_PASSWORD and AUTH_SESSION_SECRET should be configured for production');
     }
   }
 
