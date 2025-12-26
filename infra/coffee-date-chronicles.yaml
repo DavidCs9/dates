@@ -1,0 +1,343 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Complete infrastructure for Coffee Date Chronicles application'
+
+Parameters:
+  ApplicationName:
+    Type: String
+    Default: coffee-date-chronicles
+    Description: Name of the application
+
+Resources:
+  # ============================================================================
+  # DynamoDB Tables
+  # ============================================================================
+  
+  # Coffee Dates Table
+  CoffeeDatesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${ApplicationName}-coffee-dates'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+        - AttributeName: GSI1PK
+          AttributeType: S
+        - AttributeName: GSI1SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: GSI1
+          KeySchema:
+            - AttributeName: GSI1PK
+              KeyType: HASH
+            - AttributeName: GSI1SK
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Application
+          Value: !Ref ApplicationName
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Photos Table
+  PhotosTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${ApplicationName}-${Environment}-photos'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+        - AttributeName: GSI1PK
+          AttributeType: S
+        - AttributeName: GSI1SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: GSI1
+          KeySchema:
+            - AttributeName: GSI1PK
+              KeyType: HASH
+            - AttributeName: GSI1SK
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Application
+          Value: !Ref ApplicationName
+        - Key: Environment
+          Value: !Ref Environment
+
+  # ============================================================================
+  # S3 Bucket
+  # ============================================================================
+  
+  # S3 Bucket for photo storage
+  PhotosBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${ApplicationName}-${Environment}-photos-${AWS::AccountId}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: [GET, PUT, POST, DELETE, HEAD]
+            AllowedOrigins: ['*']  # In production, restrict to your domain
+            ExposedHeaders: [ETag]
+            MaxAge: 3000
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteIncompleteMultipartUploads
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 1
+          - Id: TransitionToIA
+            Status: Enabled
+            Transitions:
+              - TransitionInDays: 30
+                StorageClass: STANDARD_IA
+          - Id: TransitionToGlacier
+            Status: Enabled
+            Transitions:
+              - TransitionInDays: 90
+                StorageClass: GLACIER
+      Tags:
+        - Key: Application
+          Value: !Ref ApplicationName
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Bucket policy for public read access to photos
+  PhotosBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref PhotosBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Sub '${PhotosBucket}/originals/*'
+          - Sid: PublicReadGetThumbnails
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Sub '${PhotosBucket}/thumbnails/*'
+
+  # ============================================================================
+  # IAM Resources
+  # ============================================================================
+  
+  # IAM Role for the application (for Lambda/EC2 if needed later)
+  ApplicationRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${ApplicationName}-${Environment}-role'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: 
+                - lambda.amazonaws.com
+                - ec2.amazonaws.com
+            Action: 'sts:AssumeRole'
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource:
+                  - !GetAtt CoffeeDatesTable.Arn
+                  - !Sub '${CoffeeDatesTable.Arn}/index/*'
+                  - !GetAtt PhotosTable.Arn
+                  - !Sub '${PhotosTable.Arn}/index/*'
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource: !Sub '${PhotosBucket}/*'
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource: !GetAtt PhotosBucket.Arn
+      Tags:
+        - Key: Application
+          Value: !Ref ApplicationName
+        - Key: Environment
+          Value: !Ref Environment
+
+  # IAM User for programmatic access (for development)
+  ApplicationUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Sub '${ApplicationName}-${Environment}-user'
+      Policies:
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource:
+                  - !GetAtt CoffeeDatesTable.Arn
+                  - !Sub '${CoffeeDatesTable.Arn}/index/*'
+                  - !GetAtt PhotosTable.Arn
+                  - !Sub '${PhotosTable.Arn}/index/*'
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource: !Sub '${PhotosBucket}/*'
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource: !GetAtt PhotosBucket.Arn
+      Tags:
+        - Key: Application
+          Value: !Ref ApplicationName
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Access keys for the user
+  ApplicationAccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName: !Ref ApplicationUser
+
+Outputs:
+  # DynamoDB Outputs
+  CoffeeDatesTableName:
+    Description: Name of the Coffee Dates DynamoDB table
+    Value: !Ref CoffeeDatesTable
+    Export:
+      Name: !Sub '${AWS::StackName}-CoffeeDatesTableName'
+
+  CoffeeDatesTableArn:
+    Description: ARN of the Coffee Dates DynamoDB table
+    Value: !GetAtt CoffeeDatesTable.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-CoffeeDatesTableArn'
+
+  PhotosTableName:
+    Description: Name of the Photos DynamoDB table
+    Value: !Ref PhotosTable
+    Export:
+      Name: !Sub '${AWS::StackName}-PhotosTableName'
+
+  PhotosTableArn:
+    Description: ARN of the Photos DynamoDB table
+    Value: !GetAtt PhotosTable.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-PhotosTableArn'
+
+  # S3 Outputs
+  PhotosBucketName:
+    Description: Name of the S3 bucket for photos
+    Value: !Ref PhotosBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-PhotosBucketName'
+
+  PhotosBucketArn:
+    Description: ARN of the S3 bucket for photos
+    Value: !GetAtt PhotosBucket.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-PhotosBucketArn'
+
+  PhotosBucketDomainName:
+    Description: Domain name of the S3 bucket
+    Value: !GetAtt PhotosBucket.DomainName
+    Export:
+      Name: !Sub '${AWS::StackName}-PhotosBucketDomainName'
+
+  # IAM Outputs
+  ApplicationRoleArn:
+    Description: ARN of the application IAM role
+    Value: !GetAtt ApplicationRole.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-ApplicationRoleArn'
+
+  ApplicationUserArn:
+    Description: ARN of the application IAM user
+    Value: !GetAtt ApplicationUser.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-ApplicationUserArn'
+
+  AccessKeyId:
+    Description: Access Key ID for the application user
+    Value: !Ref ApplicationAccessKey
+    Export:
+      Name: !Sub '${AWS::StackName}-AccessKeyId'
+
+  SecretAccessKey:
+    Description: Secret Access Key for the application user (store securely!)
+    Value: !GetAtt ApplicationAccessKey.SecretAccessKey
+    Export:
+      Name: !Sub '${AWS::StackName}-SecretAccessKey'
+
+  # Environment Configuration
+  EnvironmentConfig:
+    Description: Environment configuration for the application
+    Value: !Sub |
+      # Add these to your .env.local file:
+      AWS_REGION=${AWS::Region}
+      S3_BUCKET_NAME=${PhotosBucket}
+      DYNAMODB_TABLE_PREFIX=${ApplicationName}-${Environment}
+      AWS_ACCESS_KEY_ID=${ApplicationAccessKey}
+      AWS_SECRET_ACCESS_KEY=${ApplicationAccessKey.SecretAccessKey}
