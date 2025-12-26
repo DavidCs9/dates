@@ -21,7 +21,7 @@ Create a warm, intuitive interface to document and relive our coffee experiences
 
 Each coffee date card will include:
 
-- **📸 Photo**: A picture from our date to capture the moment
+- **📸 Photos**: Multiple pictures from our date to capture different moments and angles
 - **🏪 Café Name**: The name of the coffee shop we visited  
 - **📅 Date**: When we had this special time together
 - **☕️ Coffee Rating**: How amazing the coffee was (our personal scale)
