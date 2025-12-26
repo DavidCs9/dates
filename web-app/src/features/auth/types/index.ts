@@ -1,4 +1,4 @@
-import type { AuthResult } from '@/shared/types';
+import type { AuthResult } from "@/shared/types";
 
 export interface AuthService {
   authenticate(password: string): Promise<AuthResult>;
@@ -14,4 +14,4 @@ export interface RatingProps {
   max?: number;
 }
 
-export * from '@/shared/types';
+export * from "@/shared/types";

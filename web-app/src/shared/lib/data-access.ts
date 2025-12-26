@@ -1,34 +1,40 @@
 import {
+  DeleteCommand,
   GetCommand,
   PutCommand,
-  UpdateCommand,
-  DeleteCommand,
   QueryCommand,
   ScanCommand,
-} from '@aws-sdk/lib-dynamodb';
-import { docClient, AWS_CONFIG } from './aws-config';
+  UpdateCommand,
+} from "@aws-sdk/lib-dynamodb";
+import { docClient } from "./aws-config";
 
 /**
  * Custom error classes for data access operations
  */
 export class DataAccessError extends Error {
-  constructor(message: string, public readonly cause?: Error) {
+  constructor(
+    message: string,
+    public readonly cause?: Error,
+  ) {
     super(message);
-    this.name = 'DataAccessError';
+    this.name = "DataAccessError";
   }
 }
 
 export class ItemNotFoundError extends DataAccessError {
   constructor(itemType: string, id: string) {
     super(`${itemType} with ID ${id} not found`);
-    this.name = 'ItemNotFoundError';
+    this.name = "ItemNotFoundError";
   }
 }
 
 export class ValidationError extends DataAccessError {
-  constructor(message: string, public readonly field?: string) {
+  constructor(
+    message: string,
+    public readonly field?: string,
+  ) {
     super(message);
-    this.name = 'ValidationError';
+    this.name = "ValidationError";
   }
 }
 
@@ -42,7 +48,7 @@ export class DataAccessLayer {
   static async getItem<T>(
     tableName: string,
     pk: string,
-    sk: string
+    sk: string,
   ): Promise<T | null> {
     try {
       const command = new GetCommand({
@@ -55,7 +61,7 @@ export class DataAccessLayer {
     } catch (error) {
       throw new DataAccessError(
         `Failed to get item from ${tableName}`,
-        error as Error
+        error as Error,
       );
     }
   }
@@ -65,7 +71,7 @@ export class DataAccessLayer {
    */
   static async putItem<T>(
     tableName: string,
-    item: T & { PK: string; SK: string }
+    item: T & { PK: string; SK: string },
   ): Promise<void> {
     try {
       const command = new PutCommand({
@@ -77,7 +83,7 @@ export class DataAccessLayer {
     } catch (error) {
       throw new DataAccessError(
         `Failed to put item into ${tableName}`,
-        error as Error
+        error as Error,
       );
     }
   }
@@ -91,7 +97,7 @@ export class DataAccessLayer {
     sk: string,
     updateExpression: string,
     expressionAttributeNames?: Record<string, string>,
-    expressionAttributeValues?: Record<string, any>
+    expressionAttributeValues?: Record<string, unknown>,
   ): Promise<void> {
     try {
       const command = new UpdateCommand({
@@ -106,7 +112,7 @@ export class DataAccessLayer {
     } catch (error) {
       throw new DataAccessError(
         `Failed to update item in ${tableName}`,
-        error as Error
+        error as Error,
       );
     }
   }
@@ -117,7 +123,7 @@ export class DataAccessLayer {
   static async deleteItem(
     tableName: string,
     pk: string,
-    sk: string
+    sk: string,
   ): Promise<void> {
     try {
       const command = new DeleteCommand({
@@ -129,7 +135,7 @@ export class DataAccessLayer {
     } catch (error) {
       throw new DataAccessError(
         `Failed to delete item from ${tableName}`,
-        error as Error
+        error as Error,
       );
     }
   }
@@ -142,19 +148,19 @@ export class DataAccessLayer {
     indexName: string,
     gsiPK: string,
     gsiSK?: string,
-    sortAscending: boolean = true
+    sortAscending: boolean = true,
   ): Promise<T[]> {
     try {
       const keyConditionExpression = gsiSK
-        ? 'GSI1PK = :gsi1pk AND GSI1SK = :gsi1sk'
-        : 'GSI1PK = :gsi1pk';
+        ? "GSI1PK = :gsi1pk AND GSI1SK = :gsi1sk"
+        : "GSI1PK = :gsi1pk";
 
-      const expressionAttributeValues: Record<string, any> = {
-        ':gsi1pk': gsiPK,
+      const expressionAttributeValues: Record<string, unknown> = {
+        ":gsi1pk": gsiPK,
       };
 
       if (gsiSK) {
-        expressionAttributeValues[':gsi1sk'] = gsiSK;
+        expressionAttributeValues[":gsi1sk"] = gsiSK;
       }
 
       const command = new QueryCommand({
@@ -170,7 +176,7 @@ export class DataAccessLayer {
     } catch (error) {
       throw new DataAccessError(
         `Failed to query GSI ${indexName} in ${tableName}`,
-        error as Error
+        error as Error,
       );
     }
   }
@@ -181,14 +187,14 @@ export class DataAccessLayer {
   static async queryByPK<T>(
     tableName: string,
     pk: string,
-    sortAscending: boolean = true
+    sortAscending: boolean = true,
   ): Promise<T[]> {
     try {
       const command = new QueryCommand({
         TableName: tableName,
-        KeyConditionExpression: 'PK = :pk',
+        KeyConditionExpression: "PK = :pk",
         ExpressionAttributeValues: {
-          ':pk': pk,
+          ":pk": pk,
         },
         ScanIndexForward: sortAscending,
       });
@@ -198,7 +204,7 @@ export class DataAccessLayer {
     } catch (error) {
       throw new DataAccessError(
         `Failed to query by PK in ${tableName}`,
-        error as Error
+        error as Error,
       );
     }
   }
@@ -217,7 +223,7 @@ export class DataAccessLayer {
     } catch (error) {
       throw new DataAccessError(
         `Failed to scan table ${tableName}`,
-        error as Error
+        error as Error,
       );
     }
   }
@@ -231,11 +237,14 @@ export class DataValidator {
    * Validate required fields
    */
   static validateRequired(
-    data: Record<string, any>,
-    requiredFields: string[]
+    data: Record<string, unknown>,
+    requiredFields: string[],
   ): void {
     for (const field of requiredFields) {
-      if (!data[field] || (typeof data[field] === 'string' && data[field].trim() === '')) {
+      if (
+        !data[field] ||
+        (typeof data[field] === "string" && data[field].trim() === "")
+      ) {
         throw new ValidationError(`${field} is required`, field);
       }
     }
@@ -248,12 +257,12 @@ export class DataValidator {
     value: string,
     fieldName: string,
     minLength: number = 1,
-    maxLength: number = 1000
+    maxLength: number = 1000,
   ): void {
     if (value.length < minLength || value.length > maxLength) {
       throw new ValidationError(
         `${fieldName} must be between ${minLength} and ${maxLength} characters`,
-        fieldName
+        fieldName,
       );
     }
   }
@@ -265,7 +274,7 @@ export class DataValidator {
     if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
       throw new ValidationError(
         `${fieldName} must be an integer between 1 and 5`,
-        fieldName
+        fieldName,
       );
     }
   }
@@ -274,9 +283,9 @@ export class DataValidator {
    * Validate date
    */
   static validateDate(date: Date | string, fieldName: string): Date {
-    const parsedDate = typeof date === 'string' ? new Date(date) : date;
-    
-    if (isNaN(parsedDate.getTime())) {
+    const parsedDate = typeof date === "string" ? new Date(date) : date;
+
+    if (Number.isNaN(parsedDate.getTime())) {
       throw new ValidationError(`${fieldName} must be a valid date`, fieldName);
     }
 

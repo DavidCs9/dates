@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "biome check",
+    "lint": "biome check --write",
+    "lint:check": "biome check",
+    "lint:precommit": "biome check --write --diagnostic-level=error",
     "format": "biome format --write"
   },
   "dependencies": {

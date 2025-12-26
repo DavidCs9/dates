@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { authService } from '@/features/auth/services/auth-service';
-import { z } from 'zod';
+import { type NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { authService } from "@/features/auth/services/auth-service";
 
 const loginSchema = z.object({
-  password: z.string().min(1, 'Password is required'),
+  password: z.string().min(1, "Password is required"),
 });
 
 export async function POST(request: NextRequest) {
@@ -14,10 +14,7 @@ export async function POST(request: NextRequest) {
     const result = await authService.authenticate(password);
 
     if (!result.success) {
-      return NextResponse.json(
-        { error: 'Invalid password' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }
 
     // Set session cookie
@@ -26,27 +23,34 @@ export async function POST(request: NextRequest) {
       expiresAt: result.expiresAt,
     });
 
-    response.cookies.set('auth-token', result.token!, {
+    if (!result.token) {
+      return NextResponse.json(
+        { error: "Authentication failed" },
+        { status: 500 },
+      );
+    }
+
+    response.cookies.set("auth-token", result.token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 24 * 60 * 60, // 24 hours
-      path: '/',
+      path: "/",
     });
 
     return response;
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request data', details: error.issues },
-        { status: 400 }
+        { error: "Invalid request data", details: error.issues },
+        { status: 400 },
       );
     }
 
-    console.error('Login error:', error);
+    console.error("Login error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: "Internal server error" },
+      { status: 500 },
     );
   }
 }

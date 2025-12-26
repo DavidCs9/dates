@@ -1,1 +1,1 @@
-export { Loading, LoadingSkeleton } from './loading';
+export { Loading, LoadingSkeleton } from "./loading";

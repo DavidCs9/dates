@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { AuthStatus } from "@/features/auth";
 
@@ -16,7 +16,7 @@ export default function Home() {
               Your personal digital scrapbook for coffee adventures
             </p>
           </div>
-          
+
           {/* Authentication Status Component */}
           <div className="flex items-center gap-4">
             <AuthStatus variant="full" />
@@ -30,10 +30,11 @@ export default function Home() {
               Welcome to Your Coffee Journey
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Document your special coffee dates with photos, ratings, and memories. 
-              Create beautiful visual cards that capture every café visit and turn them into cherished memories.
+              Document your special coffee dates with photos, ratings, and
+              memories. Create beautiful visual cards that capture every café
+              visit and turn them into cherished memories.
             </p>
-            
+
             {/* Authentication Demo Section */}
             <div className="border-t pt-6">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
@@ -41,17 +42,23 @@ export default function Home() {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">Badge Style</h4>
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">
+                    Badge Style
+                  </h4>
                   <AuthStatus variant="badge" />
                 </div>
-                
+
                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">Button Style</h4>
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">
+                    Button Style
+                  </h4>
                   <AuthStatus variant="button" />
                 </div>
-                
+
                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">Full Style</h4>
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">
+                    Full Style
+                  </h4>
                   <AuthStatus variant="full" />
                 </div>
               </div>
@@ -65,19 +72,21 @@ export default function Home() {
                 📸 Photo Memories
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Upload multiple photos for each coffee date and create beautiful visual stories.
+                Upload multiple photos for each coffee date and create beautiful
+                visual stories.
               </p>
             </div>
-            
+
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 ⭐ Personal Ratings
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Rate your coffee and desserts on a personal scale to track your favorites.
+                Rate your coffee and desserts on a personal scale to track your
+                favorites.
               </p>
             </div>
-            
+
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 📍 Location Tracking
@@ -94,12 +103,16 @@ export default function Home() {
               🔐 Simple Authentication
             </h3>
             <p className="text-blue-800 dark:text-blue-200 mb-4">
-              Authentication is only required for creating, editing, or deleting coffee dates. 
-              Anyone can view your coffee adventures without logging in.
+              Authentication is only required for creating, editing, or deleting
+              coffee dates. Anyone can view your coffee adventures without
+              logging in.
             </p>
             <div className="text-sm text-blue-700 dark:text-blue-300">
-              <strong>Write Operations (Require Auth):</strong> Create, Edit, Delete coffee dates<br/>
-              <strong>Read Operations (Public):</strong> View coffee date memories
+              <strong>Write Operations (Require Auth):</strong> Create, Edit,
+              Delete coffee dates
+              <br />
+              <strong>Read Operations (Public):</strong> View coffee date
+              memories
             </div>
           </div>
         </main>

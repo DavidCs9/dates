@@ -1,4 +1,8 @@
-import type { CoffeeDate, CreateCoffeeDateRequest, UpdateCoffeeDateRequest } from '@/shared/types';
+import type {
+  CoffeeDate,
+  CreateCoffeeDateRequest,
+  UpdateCoffeeDateRequest,
+} from "@/shared/types";
 
 export interface CoffeeDateService {
   getAll(): Promise<CoffeeDate[]>;
@@ -15,4 +19,4 @@ export interface MemoryCardProps {
   isAuthenticated?: boolean;
 }
 
-export * from '@/shared/types';
+export * from "@/shared/types";

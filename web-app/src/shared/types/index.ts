@@ -68,25 +68,25 @@ export interface AuthResult {
 
 // DynamoDB record types
 export interface CoffeeDateRecord {
-  PK: string;                    // "COFFEE_DATE#${id}"
-  SK: string;                    // "METADATA"
-  GSI1PK: string;               // "COFFEE_DATES"
-  GSI1SK: string;               // ISO date string for sorting
+  PK: string; // "COFFEE_DATE#${id}"
+  SK: string; // "METADATA"
+  GSI1PK: string; // "COFFEE_DATES"
+  GSI1SK: string; // ISO date string for sorting
   id: string;
   cafeInfo: CafeInfo;
   photoIds: string[];
   primaryPhotoId: string;
   ratings: Ratings;
-  visitDate: string;            // ISO date string
-  createdAt: string;            // ISO date string
-  updatedAt: string;            // ISO date string
+  visitDate: string; // ISO date string
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
 }
 
 export interface PhotoRecord {
-  PK: string;                    // "PHOTO#${id}"
-  SK: string;                    // "METADATA"
-  GSI1PK: string;               // "COFFEE_DATE#${coffeeDateId}"
-  GSI1SK: string;               // "PHOTO#${id}"
+  PK: string; // "PHOTO#${id}"
+  SK: string; // "METADATA"
+  GSI1PK: string; // "COFFEE_DATE#${coffeeDateId}"
+  GSI1SK: string; // "PHOTO#${id}"
   id: string;
   coffeeDateId: string;
   s3Key: string;
@@ -95,5 +95,5 @@ export interface PhotoRecord {
   contentType: string;
   size: number;
   thumbnailS3Key?: string;
-  uploadedAt: string;           // ISO date string
+  uploadedAt: string; // ISO date string
 }

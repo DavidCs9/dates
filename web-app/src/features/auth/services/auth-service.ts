@@ -1,5 +1,5 @@
-import { ENV } from '@/shared/lib/env';
-import type { AuthResult, AuthService } from '../types';
+import { ENV } from "@/shared/lib/env";
+import type { AuthResult, AuthService } from "../types";
 
 // Simple session storage using in-memory store
 // In production, this would use Redis or database
@@ -7,14 +7,12 @@ const activeSessions = new Map<string, { expiresAt: Date }>();
 
 export class SimpleAuthService implements AuthService {
   private readonly password: string;
-  private readonly sessionSecret: string;
 
   constructor() {
-    this.password = ENV.AUTH_PASSWORD || 'dev-password';
-    this.sessionSecret = ENV.AUTH_SESSION_SECRET || 'dev-session-secret';
-    
-    if (!ENV.AUTH_PASSWORD || !ENV.AUTH_SESSION_SECRET) {
-      console.warn('AUTH_PASSWORD and AUTH_SESSION_SECRET should be configured for production');
+    this.password = ENV.AUTH_PASSWORD || "dev-password";
+
+    if (!ENV.AUTH_PASSWORD) {
+      console.warn("AUTH_PASSWORD should be configured for production");
     }
   }
 
@@ -83,6 +81,9 @@ export class SimpleAuthService implements AuthService {
 export const authService = new SimpleAuthService();
 
 // Cleanup expired sessions every hour
-setInterval(() => {
-  SimpleAuthService.cleanupExpiredSessions();
-}, 60 * 60 * 1000);
+setInterval(
+  () => {
+    SimpleAuthService.cleanupExpiredSessions();
+  },
+  60 * 60 * 1000,
+);

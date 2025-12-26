@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { authService } from '../services/auth-service';
+import { type NextRequest, NextResponse } from "next/server";
+import { authService } from "../services/auth-service";
 
 export class AuthenticationError extends Error {
-  constructor(message: string = 'Authentication required') {
+  constructor(message: string = "Authentication required") {
     super(message);
-    this.name = 'AuthenticationError';
+    this.name = "AuthenticationError";
   }
 }
 
@@ -13,16 +13,16 @@ export class AuthenticationError extends Error {
  * Returns the authenticated token if valid, throws AuthenticationError if not
  */
 export async function requireAuth(request: NextRequest): Promise<string> {
-  const token = request.cookies.get('auth-token')?.value;
-  
+  const token = request.cookies.get("auth-token")?.value;
+
   if (!token) {
-    throw new AuthenticationError('No authentication token provided');
+    throw new AuthenticationError("No authentication token provided");
   }
 
   const isValid = await authService.verifySession(token);
-  
+
   if (!isValid) {
-    throw new AuthenticationError('Invalid or expired authentication token');
+    throw new AuthenticationError("Invalid or expired authentication token");
   }
 
   return token;
@@ -31,8 +31,8 @@ export async function requireAuth(request: NextRequest): Promise<string> {
 /**
  * Higher-order function to wrap API route handlers with authentication
  */
-export function withAuth<T extends any[]>(
-  handler: (request: NextRequest, ...args: T) => Promise<NextResponse>
+export function withAuth<T extends unknown[]>(
+  handler: (request: NextRequest, ...args: T) => Promise<NextResponse>,
 ) {
   return async (request: NextRequest, ...args: T): Promise<NextResponse> => {
     try {
@@ -40,16 +40,13 @@ export function withAuth<T extends any[]>(
       return handler(request, ...args);
     } catch (error) {
       if (error instanceof AuthenticationError) {
-        return NextResponse.json(
-          { error: error.message },
-          { status: 401 }
-        );
+        return NextResponse.json({ error: error.message }, { status: 401 });
       }
-      
-      console.error('Authentication middleware error:', error);
+
+      console.error("Authentication middleware error:", error);
       return NextResponse.json(
-        { error: 'Internal server error' },
-        { status: 500 }
+        { error: "Internal server error" },
+        { status: 500 },
       );
     }
   };

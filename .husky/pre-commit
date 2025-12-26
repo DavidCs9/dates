@@ -1,0 +1,16 @@
+echo "🚀 Running pre-commit checks..."
+
+echo "🔍 Running linter and auto-fixing issues..."
+if ! npm run lint:precommit; then
+  echo "❌ Linting failed with errors. Please fix the issues before committing."
+  echo "ℹ️  Note: Many formatting issues were auto-fixed. You may need to stage the changes."
+  exit 1
+fi
+
+echo "🏗️  Running build..."
+if ! npm run build; then
+  echo "❌ Build failed. Please fix the issues before committing."
+  exit 1
+fi
+
+echo "✅ All pre-commit checks passed!"

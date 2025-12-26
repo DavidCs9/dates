@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, ReactNode } from 'react';
-import { useAuth } from './auth-context';
-import { LoginForm } from './login-form';
+import { type ReactNode, useState } from "react";
+import { useAuth } from "./auth-context";
+import { LoginForm } from "./login-form";
 
 interface ProtectedActionProps {
   children: ReactNode;
@@ -14,10 +14,10 @@ interface ProtectedActionProps {
  * Component that wraps actions requiring authentication
  * Shows login form when authentication is needed
  */
-export function ProtectedAction({ 
-  children, 
+export function ProtectedAction({
+  children,
   fallback,
-  onAuthRequired 
+  onAuthRequired,
 }: ProtectedActionProps) {
   const { isAuthenticated, login } = useAuth();
   const [showLoginForm, setShowLoginForm] = useState(false);
@@ -36,11 +36,21 @@ export function ProtectedAction({
     return (
       <>
         {fallback || (
-          <div onClick={handleAuthRequired} className="cursor-pointer">
+          <button
+            type="button"
+            onClick={handleAuthRequired}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleAuthRequired();
+              }
+            }}
+            className="cursor-pointer bg-transparent border-none p-0 m-0 text-inherit font-inherit"
+          >
             {children}
-          </div>
+          </button>
         )}
-        
+
         <LoginForm
           isOpen={showLoginForm}
           onClose={() => setShowLoginForm(false)}
