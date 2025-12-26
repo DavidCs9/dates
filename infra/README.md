@@ -49,7 +49,7 @@ aws cloudformation deploy \
   --template-file coffee-date-chronicles.yaml \
   --stack-name coffee-date-chronicles \
   --capabilities CAPABILITY_NAMED_IAM \
-  --region us-east-1
+  --region us-west-1
 ```
 
 ### 2. Get Stack Outputs
