@@ -30,14 +30,14 @@ The implementation follows a feature-first approach, implementing core functiona
     - _Requirements: 8.5, 10.1, 10.3_
 
 
-- [ ] 3. Data Layer and AWS Integration
-  - [ ] 3.1 Set up DynamoDB tables and S3 bucket
+- [x] 3. Data Layer and AWS Integration
+  - [x] 3.1 Set up DynamoDB tables and S3 bucket
     - Create DynamoDB tables for coffee dates and photos
     - Configure S3 bucket with proper permissions and folder structure
     - Implement data access layer with proper error handling
     - _Requirements: 6.1, 6.2, 6.4_
 
-  - [ ] 3.2 Implement coffee date data service
+  - [x] 3.2 Implement coffee date data service
     - Create CoffeeDateService with CRUD operations
     - Implement proper DynamoDB indexing and querying
     - Add data validation before persistence
@@ -49,7 +49,7 @@ The implementation follows a feature-first approach, implementing core functiona
     - **Property 17: Data Validation Before Persistence**
     - **Validates: Requirements 1.1, 1.5, 6.3, 6.5**
 
-  - [ ] 3.4 Implement photo storage service
+  - [x] 3.4 Implement photo storage service
     - Create PhotoService for S3 upload/download operations
     - Implement image resizing and thumbnail generation
     - Add photo association with coffee dates
