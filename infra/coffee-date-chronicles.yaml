@@ -137,12 +137,12 @@ Resources:
             Effect: Allow
             Principal: '*'
             Action: 's3:GetObject'
-            Resource: !Sub '${PhotosBucket}/originals/*'
+            Resource: !Sub '${PhotosBucket.Arn}/originals/*'
           - Sid: PublicReadGetThumbnails
             Effect: Allow
             Principal: '*'
             Action: 's3:GetObject'
-            Resource: !Sub '${PhotosBucket}/thumbnails/*'
+            Resource: !Sub '${PhotosBucket.Arn}/thumbnails/*'
 
   # ============================================================================
   # IAM Resources
