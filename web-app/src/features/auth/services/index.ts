@@ -1,0 +1,1 @@
+export { authService, SimpleAuthService } from './auth-service';
