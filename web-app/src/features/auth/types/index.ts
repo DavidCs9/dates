@@ -2,8 +2,8 @@ import type { AuthResult } from '@/shared/types';
 
 export interface AuthService {
   authenticate(password: string): Promise<AuthResult>;
-  verifySession(): Promise<boolean>;
-  logout(): Promise<void>;
+  verifySession(token?: string): Promise<boolean>;
+  logout(token?: string): Promise<void>;
 }
 
 export interface RatingProps {
