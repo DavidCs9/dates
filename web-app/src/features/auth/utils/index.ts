@@ -1,6 +1,6 @@
-export { 
-  requireAuth, 
-  withAuth, 
-  isAuthenticated, 
-  AuthenticationError 
-} from './auth-middleware';
+export {
+  AuthenticationError,
+  isAuthenticated,
+  requireAuth,
+  withAuth,
+} from "./auth-middleware";

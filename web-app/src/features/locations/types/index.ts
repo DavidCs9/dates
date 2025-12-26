@@ -1,4 +1,4 @@
-import type { CafeInfo, PlaceSearchResult } from '@/shared/types';
+import type { CafeInfo, PlaceSearchResult } from "@/shared/types";
 
 export interface LocationService {
   searchPlaces(query: string): Promise<PlaceSearchResult[]>;
@@ -12,4 +12,4 @@ export interface LocationPickerProps {
   placeholder?: string;
 }
 
-export * from '@/shared/types';
+export * from "@/shared/types";

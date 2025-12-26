@@ -1,16 +1,19 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { MemoryCardProps } from "../types";
 
-export function MemoryCard({ coffeeDate, onEdit, onDelete, isAuthenticated }: MemoryCardProps) {
+export function MemoryCard({
+  coffeeDate,
+  onEdit: _onEdit,
+  onDelete: _onDelete,
+  isAuthenticated: _isAuthenticated,
+}: MemoryCardProps) {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>{coffeeDate.cafeInfo.name}</span>
-          <Badge variant="secondary">
-            ☕ {coffeeDate.ratings.coffee}/5
-          </Badge>
+          <Badge variant="secondary">☕ {coffeeDate.ratings.coffee}/5</Badge>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -22,9 +25,7 @@ export function MemoryCard({ coffeeDate, onEdit, onDelete, isAuthenticated }: Me
             {new Date(coffeeDate.visitDate).toLocaleDateString()}
           </p>
           {coffeeDate.ratings.dessert && (
-            <Badge variant="outline">
-              🍰 {coffeeDate.ratings.dessert}/5
-            </Badge>
+            <Badge variant="outline">🍰 {coffeeDate.ratings.dessert}/5</Badge>
           )}
         </div>
       </CardContent>

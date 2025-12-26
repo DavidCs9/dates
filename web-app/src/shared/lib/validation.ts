@@ -5,16 +5,16 @@ export function isValidRating(rating: number): boolean {
 }
 
 export function isValidCafeName(name: string): boolean {
-  return typeof name === 'string' && name.trim().length > 0;
+  return typeof name === "string" && name.trim().length > 0;
 }
 
 export function isValidImageFile(file: File): boolean {
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
   return allowedTypes.includes(file.type);
 }
 
 export function isValidImageFormat(contentType: string): boolean {
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
   return allowedTypes.includes(contentType);
 }
 
@@ -24,5 +24,5 @@ export function validateEmail(email: string): boolean {
 }
 
 export function sanitizeString(input: string): string {
-  return input.trim().replace(/\s+/g, ' ');
+  return input.trim().replace(/\s+/g, " ");
 }

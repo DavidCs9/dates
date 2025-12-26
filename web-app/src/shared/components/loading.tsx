@@ -17,7 +17,7 @@ export function Loading({ className, size = "md" }: LoadingProps) {
       <div
         className={cn(
           "animate-spin rounded-full border-2 border-gray-300 border-t-gray-900",
-          sizeClasses[size]
+          sizeClasses[size],
         )}
       />
     </div>
@@ -25,7 +25,5 @@ export function Loading({ className, size = "md" }: LoadingProps) {
 }
 
 export function LoadingSkeleton({ className }: { className?: string }) {
-  return (
-    <div className={cn("animate-pulse bg-gray-200 rounded", className)} />
-  );
+  return <div className={cn("animate-pulse bg-gray-200 rounded", className)} />;
 }

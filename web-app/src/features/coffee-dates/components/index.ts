@@ -1,1 +1,1 @@
-export { MemoryCard } from './memory-card';
+export { MemoryCard } from "./memory-card";

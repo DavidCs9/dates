@@ -1,4 +1,4 @@
-import type { Photo } from '@/shared/types';
+import type { Photo } from "@/shared/types";
 
 export interface PhotoService {
   uploadMultiple(files: File[]): Promise<Photo[]>;
@@ -15,4 +15,4 @@ export interface PhotoGalleryProps {
   isEditable?: boolean;
 }
 
-export * from '@/shared/types';
+export * from "@/shared/types";

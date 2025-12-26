@@ -1,21 +1,20 @@
-import { v4 as uuidv4 } from 'uuid';
 import {
-  PutObjectCommand,
   DeleteObjectCommand,
   GetObjectCommand,
-} from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import sharp from 'sharp';
+  PutObjectCommand,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import sharp from "sharp";
+import { v4 as uuidv4 } from "uuid";
 import {
-  s3Client,
-  DataAccessLayer,
-  DataValidator,
-  ValidationError,
-  ItemNotFoundError,
   AWS_CONFIG,
-} from '@/shared/lib';
-import type { Photo, PhotoRecord } from '@/shared/types';
-import type { PhotoService as IPhotoService } from '../types';
+  DataAccessLayer,
+  ItemNotFoundError,
+  s3Client,
+  ValidationError,
+} from "@/shared/lib";
+import type { Photo, PhotoRecord } from "@/shared/types";
+import type { PhotoService as IPhotoService } from "../types";
 
 /**
  * Service for managing photo storage and operations
@@ -24,7 +23,7 @@ export class PhotoService implements IPhotoService {
   private readonly photosTable = AWS_CONFIG.PHOTOS_TABLE;
   private readonly bucketName = AWS_CONFIG.S3_BUCKET_NAME;
   private readonly maxFileSize = 10 * 1024 * 1024; // 10MB
-  private readonly allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+  private readonly allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"];
   private readonly thumbnailSize = { width: 400, height: 400 };
 
   /**
@@ -34,12 +33,14 @@ export class PhotoService implements IPhotoService {
     try {
       this.validateFiles(files);
 
-      const uploadPromises = files.map(file => this.uploadSingle(file, coffeeDateId));
+      const uploadPromises = files.map((file) =>
+        this.uploadSingle(file, coffeeDateId),
+      );
       const photos = await Promise.all(uploadPromises);
 
       return photos;
     } catch (error) {
-      console.error('Failed to upload multiple photos:', error);
+      console.error("Failed to upload multiple photos:", error);
       throw error;
     }
   }
@@ -47,14 +48,17 @@ export class PhotoService implements IPhotoService {
   /**
    * Upload a single photo
    */
-  private async uploadSingle(file: File, coffeeDateId?: string): Promise<Photo> {
+  private async uploadSingle(
+    file: File,
+    coffeeDateId?: string,
+  ): Promise<Photo> {
     try {
       this.validateFile(file);
 
       const photoId = uuidv4();
       const now = new Date();
       const dateFolder = this.getDateFolder(now);
-      
+
       // Generate S3 keys
       const originalKey = `originals/${dateFolder}/${photoId}-${file.name}`;
       const thumbnailKey = `thumbnails/${dateFolder}/${photoId}-thumb.jpg`;
@@ -67,16 +71,16 @@ export class PhotoService implements IPhotoService {
       await this.uploadToS3(originalKey, fileBuffer, file.type);
 
       // Upload thumbnail
-      await this.uploadToS3(thumbnailKey, thumbnailBuffer, 'image/jpeg');
+      await this.uploadToS3(thumbnailKey, thumbnailBuffer, "image/jpeg");
 
       // Create photo record
       const photoRecord: PhotoRecord = {
         PK: `PHOTO#${photoId}`,
-        SK: 'METADATA',
-        GSI1PK: coffeeDateId ? `COFFEE_DATE#${coffeeDateId}` : 'UNASSIGNED',
+        SK: "METADATA",
+        GSI1PK: coffeeDateId ? `COFFEE_DATE#${coffeeDateId}` : "UNASSIGNED",
         GSI1SK: `PHOTO#${photoId}`,
         id: photoId,
-        coffeeDateId: coffeeDateId || '',
+        coffeeDateId: coffeeDateId || "",
         s3Key: originalKey,
         s3Bucket: this.bucketName,
         filename: file.name,
@@ -107,24 +111,26 @@ export class PhotoService implements IPhotoService {
       const photoRecord = await DataAccessLayer.getItem<PhotoRecord>(
         this.photosTable,
         `PHOTO#${photoId}`,
-        'METADATA'
+        "METADATA",
       );
 
       if (!photoRecord) {
-        throw new ItemNotFoundError('Photo', photoId);
+        throw new ItemNotFoundError("Photo", photoId);
       }
 
       // Delete S3 objects
       await Promise.all([
         this.deleteFromS3(photoRecord.s3Key),
-        photoRecord.thumbnailS3Key ? this.deleteFromS3(photoRecord.thumbnailS3Key) : Promise.resolve(),
+        photoRecord.thumbnailS3Key
+          ? this.deleteFromS3(photoRecord.thumbnailS3Key)
+          : Promise.resolve(),
       ]);
 
       // Delete photo record
       await DataAccessLayer.deleteItem(
         this.photosTable,
         `PHOTO#${photoId}`,
-        'METADATA'
+        "METADATA",
       );
     } catch (error) {
       console.error(`Failed to delete photo ${photoId}:`, error);
@@ -138,7 +144,7 @@ export class PhotoService implements IPhotoService {
   async generateThumbnail(s3Key: string): Promise<string> {
     try {
       if (!s3Key) {
-        throw new ValidationError('S3 key is required', 's3Key');
+        throw new ValidationError("S3 key is required", "s3Key");
       }
 
       // Get original image from S3
@@ -149,23 +155,25 @@ export class PhotoService implements IPhotoService {
 
       const response = await s3Client.send(getCommand);
       if (!response.Body) {
-        throw new Error('Failed to retrieve image from S3');
+        throw new Error("Failed to retrieve image from S3");
       }
 
       // Convert stream to buffer
-      const imageBuffer = await this.streamToBuffer(response.Body as any);
+      const imageBuffer = await this.streamToBuffer(
+        response.Body as NodeJS.ReadableStream,
+      );
 
       // Generate thumbnail
       const thumbnailBuffer = await this.generateThumbnailBuffer(imageBuffer);
 
       // Generate thumbnail key
-      const pathParts = s3Key.split('/');
+      const pathParts = s3Key.split("/");
       const filename = pathParts[pathParts.length - 1];
       const dateFolder = pathParts[1]; // Assuming structure: originals/YYYY/MM/DD/filename
       const thumbnailKey = `thumbnails/${dateFolder}/thumb-${filename}`;
 
       // Upload thumbnail
-      await this.uploadToS3(thumbnailKey, thumbnailBuffer, 'image/jpeg');
+      await this.uploadToS3(thumbnailKey, thumbnailBuffer, "image/jpeg");
 
       return thumbnailKey;
     } catch (error) {
@@ -180,7 +188,7 @@ export class PhotoService implements IPhotoService {
   async getSignedUrl(s3Key: string, expiresIn: number = 3600): Promise<string> {
     try {
       if (!s3Key) {
-        throw new ValidationError('S3 key is required', 's3Key');
+        throw new ValidationError("S3 key is required", "s3Key");
       }
 
       const command = new GetObjectCommand({
@@ -205,13 +213,16 @@ export class PhotoService implements IPhotoService {
 
       const photoRecords = await DataAccessLayer.queryGSI<PhotoRecord>(
         this.photosTable,
-        'GSI1',
-        `COFFEE_DATE#${coffeeDateId}`
+        "GSI1",
+        `COFFEE_DATE#${coffeeDateId}`,
       );
 
-      return photoRecords.map(record => this.recordToPhoto(record));
+      return photoRecords.map((record) => this.recordToPhoto(record));
     } catch (error) {
-      console.error(`Failed to get photos for coffee date ${coffeeDateId}:`, error);
+      console.error(
+        `Failed to get photos for coffee date ${coffeeDateId}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -219,30 +230,36 @@ export class PhotoService implements IPhotoService {
   /**
    * Associate photos with a coffee date
    */
-  async associateWithCoffeeDate(photoIds: string[], coffeeDateId: string): Promise<void> {
+  async associateWithCoffeeDate(
+    photoIds: string[],
+    coffeeDateId: string,
+  ): Promise<void> {
     try {
       this.validatePhotoId(coffeeDateId);
 
-      const updatePromises = photoIds.map(photoId =>
+      const updatePromises = photoIds.map((photoId) =>
         DataAccessLayer.updateItem(
           this.photosTable,
           `PHOTO#${photoId}`,
-          'METADATA',
-          'SET #coffeeDateId = :coffeeDateId, #GSI1PK = :GSI1PK',
+          "METADATA",
+          "SET #coffeeDateId = :coffeeDateId, #GSI1PK = :GSI1PK",
           {
-            '#coffeeDateId': 'coffeeDateId',
-            '#GSI1PK': 'GSI1PK',
+            "#coffeeDateId": "coffeeDateId",
+            "#GSI1PK": "GSI1PK",
           },
           {
-            ':coffeeDateId': coffeeDateId,
-            ':GSI1PK': `COFFEE_DATE#${coffeeDateId}`,
-          }
-        )
+            ":coffeeDateId": coffeeDateId,
+            ":GSI1PK": `COFFEE_DATE#${coffeeDateId}`,
+          },
+        ),
       );
 
       await Promise.all(updatePromises);
     } catch (error) {
-      console.error(`Failed to associate photos with coffee date ${coffeeDateId}:`, error);
+      console.error(
+        `Failed to associate photos with coffee date ${coffeeDateId}:`,
+        error,
+      );
       throw error;
     }
   }
@@ -268,7 +285,11 @@ export class PhotoService implements IPhotoService {
   /**
    * Upload buffer to S3
    */
-  private async uploadToS3(key: string, buffer: Buffer, contentType: string): Promise<void> {
+  private async uploadToS3(
+    key: string,
+    buffer: Buffer,
+    contentType: string,
+  ): Promise<void> {
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
       Key: key,
@@ -297,8 +318,8 @@ export class PhotoService implements IPhotoService {
   private async generateThumbnailBuffer(imageBuffer: Buffer): Promise<Buffer> {
     return await sharp(imageBuffer)
       .resize(this.thumbnailSize.width, this.thumbnailSize.height, {
-        fit: 'cover',
-        position: 'center',
+        fit: "cover",
+        position: "center",
       })
       .jpeg({ quality: 80 })
       .toBuffer();
@@ -315,13 +336,13 @@ export class PhotoService implements IPhotoService {
   /**
    * Convert stream to buffer
    */
-  private async streamToBuffer(stream: any): Promise<Buffer> {
+  private async streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
     const chunks: Buffer[] = [];
-    
+
     return new Promise((resolve, reject) => {
-      stream.on('data', (chunk: Buffer) => chunks.push(chunk));
-      stream.on('error', reject);
-      stream.on('end', () => resolve(Buffer.concat(chunks)));
+      stream.on("data", (chunk: Buffer) => chunks.push(chunk));
+      stream.on("error", reject);
+      stream.on("end", () => resolve(Buffer.concat(chunks)));
     });
   }
 
@@ -330,8 +351,8 @@ export class PhotoService implements IPhotoService {
    */
   private getDateFolder(date: Date): string {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}/${month}/${day}`;
   }
 
@@ -340,7 +361,7 @@ export class PhotoService implements IPhotoService {
    */
   private validateFiles(files: File[]): void {
     if (!files || files.length === 0) {
-      throw new ValidationError('At least one file is required', 'files');
+      throw new ValidationError("At least one file is required", "files");
     }
 
     files.forEach((file, index) => {
@@ -348,7 +369,10 @@ export class PhotoService implements IPhotoService {
         this.validateFile(file);
       } catch (error) {
         if (error instanceof ValidationError) {
-          throw new ValidationError(`File ${index + 1}: ${error.message}`, `files[${index}]`);
+          throw new ValidationError(
+            `File ${index + 1}: ${error.message}`,
+            `files[${index}]`,
+          );
         }
         throw error;
       }
@@ -360,20 +384,20 @@ export class PhotoService implements IPhotoService {
    */
   private validateFile(file: File): void {
     if (!file) {
-      throw new ValidationError('File is required', 'file');
+      throw new ValidationError("File is required", "file");
     }
 
     if (file.size > this.maxFileSize) {
       throw new ValidationError(
         `File size must be less than ${this.maxFileSize / (1024 * 1024)}MB`,
-        'file.size'
+        "file.size",
       );
     }
 
     if (!this.allowedMimeTypes.includes(file.type)) {
       throw new ValidationError(
-        `File type must be one of: ${this.allowedMimeTypes.join(', ')}`,
-        'file.type'
+        `File type must be one of: ${this.allowedMimeTypes.join(", ")}`,
+        "file.type",
       );
     }
   }
@@ -382,8 +406,8 @@ export class PhotoService implements IPhotoService {
    * Validate photo ID
    */
   private validatePhotoId(photoId: string): void {
-    if (!photoId || typeof photoId !== 'string' || photoId.trim() === '') {
-      throw new ValidationError('Photo ID is required', 'photoId');
+    if (!photoId || typeof photoId !== "string" || photoId.trim() === "") {
+      throw new ValidationError("Photo ID is required", "photoId");
     }
   }
 }
