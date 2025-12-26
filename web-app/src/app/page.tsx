@@ -1,8 +1,64 @@
 "use client";
 
-import { AuthStatus } from "@/features/auth";
+import { Plus } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { AuthStatus, useAuth } from "@/features/auth";
+import {
+  DeleteConfirmationDialog,
+  MemoryCard,
+} from "@/features/coffee-dates/components";
+import { useCoffeeDateManagement } from "@/features/coffee-dates/hooks";
+import { coffeeDateService } from "@/features/coffee-dates/services";
+import { Loading } from "@/shared/components";
+import type { CoffeeDate } from "@/shared/types";
 
 export default function Home() {
+  const [coffeeDates, setCoffeeDates] = useState<CoffeeDate[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [coffeeDateToDelete, setCoffeeDateToDelete] =
+    useState<CoffeeDate | null>(null);
+
+  const { isAuthenticated } = useAuth();
+  const { handleEdit, handleDelete } = useCoffeeDateManagement();
+
+  // Load coffee dates
+  useEffect(() => {
+    const loadCoffeeDates = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await coffeeDateService.getAll();
+        setCoffeeDates(data);
+      } catch (err) {
+        console.error("Failed to load coffee dates:", err);
+        setError("Failed to load coffee dates");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadCoffeeDates();
+  }, []);
+
+  const handleDeleteClick = (coffeeDateId: string) => {
+    const coffeeDate = coffeeDates.find((cd) => cd.id === coffeeDateId);
+    if (coffeeDate) {
+      setCoffeeDateToDelete(coffeeDate);
+      setDeleteDialogOpen(true);
+    }
+  };
+
+  const handleDeleteConfirm = async (coffeeDateId: string) => {
+    await handleDelete(coffeeDateId);
+    // Refresh the list
+    const updatedCoffeeDates = await coffeeDateService.getAll();
+    setCoffeeDates(updatedCoffeeDates);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4 py-8">
@@ -17,105 +73,102 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Authentication Status Component */}
           <div className="flex items-center gap-4">
+            {isAuthenticated && (
+              <Button asChild>
+                <Link href="/create">
+                  <Plus className="h-4 w-4" />
+                  New Coffee Date
+                </Link>
+              </Button>
+            )}
             <AuthStatus variant="full" />
           </div>
         </header>
 
         {/* Main Content */}
-        <main className="max-w-4xl mx-auto">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mb-8">
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-              Welcome to Your Coffee Journey
-            </h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Document your special coffee dates with photos, ratings, and
-              memories. Create beautiful visual cards that capture every café
-              visit and turn them into cherished memories.
-            </p>
-
-            {/* Authentication Demo Section */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                Authentication Status
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">
-                    Badge Style
-                  </h4>
-                  <AuthStatus variant="badge" />
-                </div>
-
-                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">
-                    Button Style
-                  </h4>
-                  <AuthStatus variant="button" />
-                </div>
-
-                <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">
-                    Full Style
-                  </h4>
-                  <AuthStatus variant="full" />
-                </div>
+        <main className="max-w-6xl mx-auto">
+          {isLoading ? (
+            <div className="flex justify-center py-12">
+              <Loading />
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <h2 className="text-2xl font-bold text-destructive mb-4">
+                Error
+              </h2>
+              <p className="text-muted-foreground mb-4">{error}</p>
+              <Button onClick={() => window.location.reload()}>
+                Try Again
+              </Button>
+            </div>
+          ) : coffeeDates.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-w-md mx-auto">
+                <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                  No Coffee Dates Yet
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">
+                  Start documenting your coffee adventures! Create your first
+                  coffee date memory.
+                </p>
+                {isAuthenticated ? (
+                  <Button asChild size="lg">
+                    <Link href="/create">
+                      <Plus className="h-5 w-5" />
+                      Create Your First Coffee Date
+                    </Link>
+                  </Button>
+                ) : (
+                  <div className="space-y-4">
+                    <p className="text-sm text-muted-foreground">
+                      Sign in to create and manage your coffee date memories
+                    </p>
+                    <AuthStatus variant="button" />
+                  </div>
+                )}
               </div>
             </div>
-          </div>
+          ) : (
+            <>
+              {/* Coffee Dates Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {coffeeDates.map((coffeeDate) => (
+                  <MemoryCard
+                    key={coffeeDate.id}
+                    coffeeDate={coffeeDate}
+                    onEdit={handleEdit}
+                    onDelete={handleDeleteClick}
+                    isAuthenticated={isAuthenticated}
+                  />
+                ))}
+              </div>
 
-          {/* Feature Preview */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                📸 Photo Memories
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Upload multiple photos for each coffee date and create beautiful
-                visual stories.
-              </p>
-            </div>
-
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                ⭐ Personal Ratings
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Rate your coffee and desserts on a personal scale to track your
-                favorites.
-              </p>
-            </div>
-
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                📍 Location Tracking
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Remember every special place with Google Maps integration.
-              </p>
-            </div>
-          </div>
-
-          {/* Authentication Info */}
-          <div className="mt-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
-              🔐 Simple Authentication
-            </h3>
-            <p className="text-blue-800 dark:text-blue-200 mb-4">
-              Authentication is only required for creating, editing, or deleting
-              coffee dates. Anyone can view your coffee adventures without
-              logging in.
-            </p>
-            <div className="text-sm text-blue-700 dark:text-blue-300">
-              <strong>Write Operations (Require Auth):</strong> Create, Edit,
-              Delete coffee dates
-              <br />
-              <strong>Read Operations (Public):</strong> View coffee date
-              memories
-            </div>
-          </div>
+              {/* Add New Button for Authenticated Users */}
+              {isAuthenticated && (
+                <div className="flex justify-center mt-8">
+                  <Button asChild size="lg">
+                    <Link href="/create">
+                      <Plus className="h-5 w-5" />
+                      Add Another Coffee Date
+                    </Link>
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
         </main>
+
+        {/* Delete Confirmation Dialog */}
+        <DeleteConfirmationDialog
+          coffeeDate={coffeeDateToDelete}
+          isOpen={deleteDialogOpen}
+          onClose={() => {
+            setDeleteDialogOpen(false);
+            setCoffeeDateToDelete(null);
+          }}
+          onConfirm={handleDeleteConfirm}
+        />
       </div>
     </div>
   );
