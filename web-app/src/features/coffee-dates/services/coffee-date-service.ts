@@ -20,8 +20,13 @@ import type { CoffeeDateService as ICoffeeDateService } from "../types";
  * Service for managing coffee date data operations
  */
 export class CoffeeDateService implements ICoffeeDateService {
-  private readonly coffeeDatesTable = AWS_CONFIG.COFFEE_DATES_TABLE;
-  private readonly photosTable = AWS_CONFIG.PHOTOS_TABLE;
+  private get coffeeDatesTable() {
+    return AWS_CONFIG.COFFEE_DATES_TABLE;
+  }
+
+  private get photosTable() {
+    return AWS_CONFIG.PHOTOS_TABLE;
+  }
 
   /**
    * Get all coffee dates, sorted by visit date (newest first)

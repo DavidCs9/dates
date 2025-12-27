@@ -60,13 +60,13 @@ After deployment, retrieve the configuration values:
 # Get all stack outputs
 aws cloudformation describe-stacks \
   --stack-name coffee-date-chronicles \
-  --region us-east-1 \
+  --region us-west-1 \
   --query 'Stacks[0].Outputs'
 
 # Get environment configuration specifically
 aws cloudformation describe-stacks \
   --stack-name coffee-date-chronicles \
-  --region us-east-1 \
+  --region us-west-1 \
   --query 'Stacks[0].Outputs[?OutputKey==`EnvironmentConfig`].OutputValue' \
   --output text
 ```
@@ -77,7 +77,7 @@ Copy the output from the `EnvironmentConfig` and add it to your `web-app/.env.lo
 
 ```bash
 # Example output to add to .env.local
-AWS_REGION=us-east-1
+AWS_REGION=us-west-1
 S3_BUCKET_NAME=coffee-date-chronicles-photos-123456789012
 DYNAMODB_TABLE_PREFIX=coffee-date-chronicles
 AWS_ACCESS_KEY_ID=AKIA...
@@ -92,7 +92,7 @@ aws cloudformation deploy \
   --template-file coffee-date-chronicles.yaml \
   --stack-name coffee-date-chronicles \
   --capabilities CAPABILITY_NAMED_IAM \
-  --region us-east-1
+  --region us-west-1
 ```
 
 ### Delete Stack
@@ -100,14 +100,14 @@ aws cloudformation deploy \
 # Warning: This will delete all data!
 aws cloudformation delete-stack \
   --stack-name coffee-date-chronicles \
-  --region us-east-1
+  --region us-west-1
 ```
 
 ### Monitor Stack Events
 ```bash
 aws cloudformation describe-stack-events \
   --stack-name coffee-date-chronicles \
-  --region us-east-1
+  --region us-west-1
 ```
 
 ## Security Notes
@@ -139,7 +139,7 @@ Check CloudFormation events for detailed error messages:
 ```bash
 aws cloudformation describe-stack-events \
   --stack-name coffee-date-chronicles \
-  --region us-east-1 \
+  --region us-west-1 \
   --query 'StackEvents[?ResourceStatus==`CREATE_FAILED`]'
 ```
 

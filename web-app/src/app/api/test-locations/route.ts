@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
+import { getOptionalEnv } from "@/shared/lib";
 
 export async function GET() {
   try {
     // Test the location search API
+    const baseUrl = getOptionalEnv("NEXTAUTH_URL", "http://localhost:3000");
     const searchResponse = await fetch(
-      `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/locations/search?q=starbucks`,
+      `${baseUrl}/api/locations/search?q=starbucks`,
     );
 
     if (!searchResponse.ok) {
