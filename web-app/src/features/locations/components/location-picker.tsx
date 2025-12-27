@@ -116,6 +116,7 @@ export function LocationPicker({
       setSelectedLocation(locationDetails);
       setQuery(locationDetails.name);
       setIsOpen(false);
+      setResults([]); // Clear results after selection
       onLocationSelect(locationDetails);
     } catch (err) {
       console.error("Location details error:", err);

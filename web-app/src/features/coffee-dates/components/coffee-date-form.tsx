@@ -39,7 +39,7 @@ const coffeeDateFormSchema = z.object({
   visitDate: z.string().min(1, "Visit date is required"),
   ratings: z.object({
     coffee: z.number().min(1, "Coffee rating is required").max(5),
-    dessert: z.number().min(1).max(5).optional(),
+    dessert: z.number().min(0).max(5).optional(),
   }),
   photos: z.array(z.instanceof(File)).min(1, "At least one photo is required"),
   primaryPhotoIndex: z.number().min(0),
@@ -210,6 +210,20 @@ export function CoffeeDateForm({
   // Handle form submission
   const handleSubmit = async (data: CoffeeDateFormData) => {
     try {
+      // Validate that we have a proper location selected
+      if (!data.cafeInfo.placeId) {
+        form.setError("cafeInfo", { message: "Please select a café location" });
+        toast.error("Please select a café location before submitting");
+        return;
+      }
+
+      // Validate that we have photos
+      if (data.photos.length === 0) {
+        form.setError("photos", { message: "At least one photo is required" });
+        toast.error("Please add at least one photo before submitting");
+        return;
+      }
+
       const submitData: CreateCoffeeDateRequest = {
         cafeInfo: data.cafeInfo,
         photos: data.photos,
@@ -481,6 +495,27 @@ export function CoffeeDateForm({
                 )}
               </Button>
             </div>
+
+            {/* Debug info for development */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="mt-4 p-3 bg-muted rounded text-xs">
+                <details>
+                  <summary className="cursor-pointer font-medium">Debug Form State</summary>
+                  <div className="mt-2 space-y-1">
+                    <div>Form Valid: {form.formState.isValid ? '✅' : '❌'}</div>
+                    <div>Location Selected: {form.watch('cafeInfo.placeId') ? '✅' : '❌'}</div>
+                    <div>Photos Count: {form.watch('photos').length}</div>
+                    <div>Coffee Rating: {form.watch('ratings.coffee')}</div>
+                    {Object.keys(form.formState.errors).length > 0 && (
+                      <div>
+                        <div className="font-medium text-destructive">Errors:</div>
+                        <pre className="text-destructive">{JSON.stringify(form.formState.errors, null, 2)}</pre>
+                      </div>
+                    )}
+                  </div>
+                </details>
+              </div>
+            )}
           </form>
         </Form>
       </CardContent>
