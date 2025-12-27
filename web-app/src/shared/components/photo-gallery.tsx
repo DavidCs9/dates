@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Photo } from "@/shared/types";
+import { FullScreenCarousel } from "./full-screen-carousel";
 
 export interface PhotoGalleryProps {
   photos: Photo[];
@@ -28,6 +29,7 @@ export function PhotoGallery({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isCarouselOpen, setIsCarouselOpen] = useState(false);
 
   // Minimum swipe distance for navigation (in pixels)
   const minSwipeDistance = 50;
@@ -58,6 +60,10 @@ export function PhotoGallery({
   const isPrimaryPhoto = currentPhoto.id === primaryPhotoId;
 
   const handlePhotoClick = () => {
+    // Open full-screen carousel
+    setIsCarouselOpen(true);
+
+    // Also call the original onPhotoSelect if provided
     if (onPhotoSelect) {
       onPhotoSelect(currentPhoto.id);
     }
@@ -210,6 +216,14 @@ export function PhotoGallery({
           ))}
         </div>
       )}
+
+      {/* Full-screen carousel */}
+      <FullScreenCarousel
+        photos={photos}
+        initialIndex={currentIndex}
+        isOpen={isCarouselOpen}
+        onClose={() => setIsCarouselOpen(false)}
+      />
     </div>
   );
 }
