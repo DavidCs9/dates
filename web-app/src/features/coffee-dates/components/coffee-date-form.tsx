@@ -60,7 +60,6 @@ export function CoffeeDateForm({
   onSubmit,
   onCancel,
   isLoading = false,
-  submitLabel = "Create Coffee Date",
 }: CoffeeDateFormProps) {
   const [dragActive, setDragActive] = useState(false);
   const [photoPreviewUrls, setPhotoPreviewUrls] = useState<string[]>([]);
@@ -262,18 +261,18 @@ export function CoffeeDateForm({
               name="cafeInfo"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Café Location</FormLabel>
+                  <FormLabel>Lugar</FormLabel>
                   <FormControl>
                     <LocationPicker
                       onLocationSelect={handleLocationSelect}
                       initialLocation={
                         field.value.placeId ? field.value : undefined
                       }
-                      placeholder="Search for a café..."
+                      placeholder="Bernardi..."
                     />
                   </FormControl>
                   <FormDescription>
-                    Search and select the café where you had your coffee date
+                    Busca el nombre del café y se llenará ubicación y nombre
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -286,7 +285,7 @@ export function CoffeeDateForm({
               name="visitDate"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Visit Date</FormLabel>
+                  <FormLabel>Fecha</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
@@ -300,9 +299,7 @@ export function CoffeeDateForm({
                       <CalendarIcon className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                     </div>
                   </FormControl>
-                  <FormDescription>
-                    When did you visit this café?
-                  </FormDescription>
+                  <FormDescription>¿Cuando fue nuestra date?</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -317,15 +314,13 @@ export function CoffeeDateForm({
                   <FormItem>
                     <FormControl>
                       <Rating
-                        label="Coffee Rating"
+                        label="Café"
                         value={field.value}
                         onChange={field.onChange}
                         max={5}
                       />
                     </FormControl>
-                    <FormDescription>
-                      How would you rate the coffee? (1-5 stars)
-                    </FormDescription>
+                    <FormDescription>¿Que tan rico estuvo? 😋</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -338,7 +333,7 @@ export function CoffeeDateForm({
                   <FormItem>
                     <FormControl>
                       <Rating
-                        label="Dessert Rating (Optional)"
+                        label="Postre (Opcional)"
                         value={field.value || 0}
                         onChange={(value) =>
                           field.onChange(value > 0 ? value : undefined)
@@ -347,7 +342,7 @@ export function CoffeeDateForm({
                       />
                     </FormControl>
                     <FormDescription>
-                      Did you have dessert? Rate it here (optional)
+                      ¿Que tal el postre? Si es que hubo
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -361,7 +356,7 @@ export function CoffeeDateForm({
               name="photos"
               render={() => (
                 <FormItem>
-                  <FormLabel>Photos</FormLabel>
+                  <FormLabel>Fotos</FormLabel>
                   <FormControl>
                     <div className="space-y-4">
                       {/* Upload Area */}
@@ -382,11 +377,13 @@ export function CoffeeDateForm({
                         <div className="flex flex-col items-center gap-2">
                           <Upload className="h-8 w-8 text-muted-foreground" />
                           <div className="text-sm">
-                            <span className="font-medium">Click to upload</span>{" "}
-                            or drag and drop
+                            <span className="font-medium">
+                              Click para subir
+                            </span>{" "}
+                            o drag and drop
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            PNG, JPG, WebP up to 10MB each
+                            PNG, JPG, WebP hasta 10MB cada una
                           </div>
                         </div>
                         <Input
@@ -426,7 +423,7 @@ export function CoffeeDateForm({
                                 {/* Primary Photo Badge */}
                                 {index === watchedPrimaryIndex && (
                                   <div className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 bg-primary text-primary-foreground text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
-                                    Primary
+                                    Principal
                                   </div>
                                 )}
 
@@ -442,9 +439,11 @@ export function CoffeeDateForm({
                                     >
                                       <ImageIcon className="h-3 w-3 sm:h-4 sm:w-4" />
                                       <span className="hidden sm:inline">
-                                        Set Primary
+                                        Hacer principal
                                       </span>
-                                      <span className="sm:hidden">Primary</span>
+                                      <span className="sm:hidden">
+                                        Principal
+                                      </span>
                                     </Button>
                                   )}
                                   <Button
@@ -455,7 +454,7 @@ export function CoffeeDateForm({
                                     className="h-7 sm:h-8 text-[10px] sm:text-xs touch-manipulation w-full max-w-[120px]"
                                   >
                                     <X className="h-3 w-3 sm:h-4 sm:w-4" />
-                                    Remove
+                                    Remover
                                   </Button>
                                 </div>
                               </div>
@@ -475,8 +474,7 @@ export function CoffeeDateForm({
                     </div>
                   </FormControl>
                   <FormDescription>
-                    Upload photos from your coffee date. The first photo will be
-                    the primary photo for the memory card.
+                    Mira chulis ya puedes subir varias :)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -493,7 +491,7 @@ export function CoffeeDateForm({
                   disabled={isLoading}
                   className="w-full sm:w-auto min-w-28 sm:min-w-32 touch-manipulation order-2 sm:order-1"
                 >
-                  Cancel
+                  Cancelar
                 </Button>
               )}
               <Button
@@ -504,11 +502,11 @@ export function CoffeeDateForm({
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span className="hidden sm:inline">Saving...</span>
-                    <span className="sm:hidden">Save</span>
+                    <span className="hidden sm:inline">Guardandoo...</span>
+                    <span className="sm:hidden">Guardar</span>
                   </>
                 ) : (
-                  submitLabel
+                  "Subir cafecini deli deli"
                 )}
               </Button>
             </div>

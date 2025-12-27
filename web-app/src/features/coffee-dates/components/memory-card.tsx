@@ -84,7 +84,7 @@ export function MemoryCard({
         <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
           <Calendar className="h-4 w-4 flex-shrink-0" />
           <span suppressHydrationWarning>
-            {new Date(coffeeDate.visitDate).toLocaleDateString("en-US", {
+            {new Date(coffeeDate.visitDate).toLocaleDateString("es", {
               year: "numeric",
               month: "long",
               day: "numeric",
@@ -96,14 +96,14 @@ export function MemoryCard({
         {/* Ratings */}
         <div className="space-y-2 mt-auto pt-2">
           <Rating
-            label="Coffee"
+            label="Café"
             value={coffeeDate.ratings.coffee}
             readonly
             className="text-xs sm:text-sm"
           />
           {coffeeDate.ratings.dessert && (
             <Rating
-              label="Dessert"
+              label="Postre"
               value={coffeeDate.ratings.dessert}
               readonly
               className="text-xs sm:text-sm"

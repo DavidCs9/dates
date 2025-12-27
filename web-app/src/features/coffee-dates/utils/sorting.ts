@@ -21,32 +21,32 @@ export interface SortConfig {
 export const SORT_OPTIONS: SortConfig[] = [
   {
     option: "visitDate-desc",
-    label: "Newest Visits",
+    label: "Más recientes",
     description: "Most recent coffee dates first",
   },
   {
     option: "visitDate-asc",
-    label: "Oldest Visits",
+    label: "Menos recientes",
     description: "Earliest coffee dates first",
   },
   {
     option: "coffee-rating-desc",
-    label: "Best Coffee",
+    label: "Mejor café",
     description: "Highest coffee ratings first",
   },
   {
     option: "coffee-rating-asc",
-    label: "Worst Coffee",
+    label: "Peor café",
     description: "Lowest coffee ratings first",
   },
   {
     option: "dessert-rating-desc",
-    label: "Best Desserts",
+    label: "Mejor postre",
     description: "Highest dessert ratings first",
   },
   {
     option: "dessert-rating-asc",
-    label: "Worst Desserts",
+    label: "Peor postre",
     description: "Lowest dessert ratings first",
   },
   {
@@ -58,16 +58,6 @@ export const SORT_OPTIONS: SortConfig[] = [
     option: "cafe-name-desc",
     label: "Café Z-A",
     description: "Reverse alphabetical by café name",
-  },
-  {
-    option: "createdAt-desc",
-    label: "Recently Added",
-    description: "Most recently created entries first",
-  },
-  {
-    option: "createdAt-asc",
-    label: "First Added",
-    description: "Oldest entries first",
   },
 ];
 
@@ -91,18 +81,6 @@ export function sortCoffeeDates(
       return sorted.sort(
         (a, b) =>
           new Date(a.visitDate).getTime() - new Date(b.visitDate).getTime(),
-      );
-
-    case "createdAt-desc":
-      return sorted.sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      );
-
-    case "createdAt-asc":
-      return sorted.sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
       );
 
     case "coffee-rating-desc":

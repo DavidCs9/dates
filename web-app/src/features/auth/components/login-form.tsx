@@ -63,7 +63,7 @@ export function LoginForm({ isOpen, onClose, onSuccess }: LoginFormProps) {
         throw new Error(result.error || "Login failed");
       }
 
-      toast.success("Successfully logged in");
+      toast.success("Bienvenida Chulis");
       form.reset();
       onSuccess();
       onClose();
@@ -80,10 +80,8 @@ export function LoginForm({ isOpen, onClose, onSuccess }: LoginFormProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Authentication Required</DialogTitle>
-          <DialogDescription>
-            Please enter your password to create, edit, or delete coffee dates.
-          </DialogDescription>
+          <DialogTitle>Clave secreta 🕵️‍♂️</DialogTitle>
+          <DialogDescription>Demuestra que eres Alecini...</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -93,11 +91,11 @@ export function LoginForm({ isOpen, onClose, onSuccess }: LoginFormProps) {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Clave unica ultra secreta 2.0</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Enter your password"
+                      placeholder="gato123...(broma)"
                       disabled={isLoading}
                       {...field}
                     />
@@ -114,10 +112,10 @@ export function LoginForm({ isOpen, onClose, onSuccess }: LoginFormProps) {
                 onClick={onClose}
                 disabled={isLoading}
               >
-                Cancel
+                No Soy
               </Button>
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login"}
+                {isLoading ? "Logging in..." : "Si Soy"}
               </Button>
             </div>
           </form>

@@ -45,11 +45,11 @@ export default function CreateCoffeeDatePage() {
         }
       }
 
-      toast.success("Coffee date created successfully!");
+      toast.success("Café agregado exitosamente :)");
       router.push("/");
     } catch (error) {
       console.error("Failed to create coffee date:", error);
-      toast.error("Failed to create coffee date. Please try again.");
+      toast.error("Error al crear Café :(");
     } finally {
       setIsLoading(false);
     }
@@ -57,7 +57,7 @@ export default function CreateCoffeeDatePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <FormHeader title="Create New Coffee Date" onBack={handleCancel} />
+      <FormHeader title="Nueva date wuuu" onBack={handleCancel} />
       <div className="flex-1 container mx-auto py-4 sm:py-8 px-4 overflow-y-auto">
         <CoffeeDateForm
           onSubmit={handleSubmit}

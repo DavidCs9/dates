@@ -142,7 +142,7 @@ export default function EditCoffeeDatePage({
               onClick={() => router.push("/")}
               className="text-primary hover:underline"
             >
-              Return to Home
+              Regresar
             </button>
           </div>
         </div>
@@ -175,7 +175,7 @@ export default function EditCoffeeDatePage({
 
   return (
     <div className="min-h-screen flex flex-col">
-      <FormHeader title="Edit Coffee Date" onBack={handleCancel} />
+      <FormHeader title="Editar cafecito" onBack={handleCancel} />
       <div className="flex-1 container mx-auto py-4 sm:py-8 px-4 overflow-y-auto">
         <CoffeeDateEditForm
           coffeeDate={coffeeDate}

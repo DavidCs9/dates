@@ -1,5 +1,4 @@
-import { ArrowUpDown } from "lucide-react";
-import { getSortConfig, SORT_OPTIONS, type SortOption } from "../utils/sorting";
+import { SORT_OPTIONS, type SortOption } from "../utils/sorting";
 
 interface SortDropdownProps {
   currentSort: SortOption;
@@ -12,8 +11,6 @@ export function SortDropdown({
   onSortChange,
   className,
 }: SortDropdownProps) {
-  const currentConfig = getSortConfig(currentSort);
-
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <select

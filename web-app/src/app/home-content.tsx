@@ -64,10 +64,10 @@ export function HomeContent({
           <div className="flex items-center justify-between gap-3">
             <div className="flex-1 min-w-0">
               <h1 className="text-lg sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-1 truncate">
-                Coffee Date Chronicles
+                Cafecitos ☕
               </h1>
               <p className="text-xs sm:text-base lg:text-lg text-gray-600 dark:text-gray-300">
-                Your personal digital scrapbook for coffee adventures
+                Lista de cafeterias de Ale y David
               </p>
             </div>
 
@@ -77,7 +77,7 @@ export function HomeContent({
                 <Button asChild size="sm" className="touch-manipulation">
                   <Link href="/create">
                     <Plus className="h-4 w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">New</span>
+                    <span className="hidden sm:inline">Nuevo</span>
                   </Link>
                 </Button>
               )}
@@ -107,23 +107,19 @@ export function HomeContent({
             <div className="text-center py-8 sm:py-12">
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8 max-w-md mx-auto">
                 <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
-                  No Coffee Dates Yet
+                  No hay dates :(
                 </h2>
-                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4 sm:mb-6">
-                  Start documenting your coffee adventures! Create your first
-                  coffee date memory.
-                </p>
                 {isAuthenticated ? (
                   <Button asChild size="lg" className="touch-manipulation">
                     <Link href="/create">
                       <Plus className="h-5 w-5" />
-                      Create Your First Coffee Date
+                      Añadir nuestro primer cafe
                     </Link>
                   </Button>
                 ) : (
                   <div className="space-y-4">
                     <p className="text-xs sm:text-sm text-muted-foreground">
-                      Sign in to create and manage your coffee date memories
+                      Inicia sesión para añadir tu primer cafe.
                     </p>
                     <AuthStatus variant="button" />
                   </div>
@@ -136,7 +132,7 @@ export function HomeContent({
               <div className="flex items-center justify-between mb-6 mx-2">
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">
-                    {sortedCoffeeDates.length} coffee date
+                    {sortedCoffeeDates.length} date
                     {sortedCoffeeDates.length !== 1 ? "s" : ""}
                   </span>
                 </div>
