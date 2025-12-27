@@ -84,23 +84,43 @@ export function sortCoffeeDates(
       );
 
     case "coffee-rating-desc":
-      return sorted.sort((a, b) => b.ratings.coffee - a.ratings.coffee);
+      return sorted.sort((a, b) => {
+        const coffeeDiff = b.ratings.coffee - a.ratings.coffee;
+        if (coffeeDiff !== 0) return coffeeDiff;
+        // Tiebreaker: use dessert rating (higher is better)
+        const aDesert = a.ratings.dessert ?? 0;
+        const bDesert = b.ratings.dessert ?? 0;
+        return bDesert - aDesert;
+      });
 
     case "coffee-rating-asc":
-      return sorted.sort((a, b) => a.ratings.coffee - b.ratings.coffee);
+      return sorted.sort((a, b) => {
+        const coffeeDiff = a.ratings.coffee - b.ratings.coffee;
+        if (coffeeDiff !== 0) return coffeeDiff;
+        // Tiebreaker: use dessert rating (lower is better for asc)
+        const aDesert = a.ratings.dessert ?? 0;
+        const bDesert = b.ratings.dessert ?? 0;
+        return aDesert - bDesert;
+      });
 
     case "dessert-rating-desc":
       return sorted.sort((a, b) => {
         const aRating = a.ratings.dessert ?? 0;
         const bRating = b.ratings.dessert ?? 0;
-        return bRating - aRating;
+        const dessertDiff = bRating - aRating;
+        if (dessertDiff !== 0) return dessertDiff;
+        // Tiebreaker: use coffee rating (higher is better)
+        return b.ratings.coffee - a.ratings.coffee;
       });
 
     case "dessert-rating-asc":
       return sorted.sort((a, b) => {
         const aRating = a.ratings.dessert ?? 0;
         const bRating = b.ratings.dessert ?? 0;
-        return aRating - bRating;
+        const dessertDiff = aRating - bRating;
+        if (dessertDiff !== 0) return dessertDiff;
+        // Tiebreaker: use coffee rating (lower is better for asc)
+        return a.ratings.coffee - b.ratings.coffee;
       });
 
     case "cafe-name-asc":
