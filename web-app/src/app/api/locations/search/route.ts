@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getLocationService } from "@/features/locations/services";
+import { ServerLocationService } from "@/features/locations/services/server-location-service";
 import { ExternalServiceError, ValidationError } from "@/shared/lib/errors";
 
 /**
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       );
     }
 
-    const locationService = getLocationService();
+    const locationService = new ServerLocationService();
     const results = await locationService.searchPlaces(trimmedQuery);
 
     return NextResponse.json({

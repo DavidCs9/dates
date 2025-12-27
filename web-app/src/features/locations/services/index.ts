@@ -3,3 +3,4 @@ export {
   GoogleMapsLocationService,
   getLocationService,
 } from "./location-service";
+export { ServerLocationService } from "./server-location-service";
