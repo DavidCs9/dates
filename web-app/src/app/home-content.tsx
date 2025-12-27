@@ -9,12 +9,15 @@ import {
   DeleteConfirmationDialog,
   MemoryCard,
   SortDropdown,
+  type ViewMode,
+  ViewToggle,
 } from "@/features/coffee-dates/components";
 import {
   useCoffeeDateManagement,
   useCoffeeDateSorting,
 } from "@/features/coffee-dates/hooks";
 import { coffeeDateClientService } from "@/features/coffee-dates/services";
+import { MapView } from "@/features/locations/components";
 import type { CoffeeDate } from "@/shared/types";
 
 interface HomeContentProps {
@@ -32,6 +35,7 @@ export function HomeContent({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [coffeeDateToDelete, setCoffeeDateToDelete] =
     useState<CoffeeDate | null>(null);
+  const [currentView, setCurrentView] = useState<ViewMode>("grid");
 
   const { isAuthenticated } = useAuth();
   const { handleEdit, handleDelete } = useCoffeeDateManagement();
@@ -128,7 +132,7 @@ export function HomeContent({
             </div>
           ) : (
             <>
-              {/* Sort Controls */}
+              {/* Sort Controls and View Toggle */}
               <div className="flex items-center justify-between mb-6 mx-2">
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">
@@ -136,25 +140,38 @@ export function HomeContent({
                     {sortedCoffeeDates.length !== 1 ? "s" : ""}
                   </span>
                 </div>
-                <SortDropdown
-                  currentSort={currentSort}
-                  onSortChange={handleSortChange}
-                />
+                <div className="flex items-center gap-3">
+                  <ViewToggle
+                    currentView={currentView}
+                    onViewChange={setCurrentView}
+                  />
+                  {currentView === "grid" && (
+                    <SortDropdown
+                      currentSort={currentSort}
+                      onSortChange={handleSortChange}
+                    />
+                  )}
+                </div>
               </div>
 
-              {/* Coffee Dates Grid - Responsive: 1 col mobile, 2 cols tablet, 3 cols desktop */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
-                {sortedCoffeeDates.map((coffeeDate, index) => (
-                  <MemoryCard
-                    key={coffeeDate.id}
-                    coffeeDate={coffeeDate}
-                    onEdit={handleEdit}
-                    onDelete={handleDeleteClick}
-                    isAuthenticated={isAuthenticated}
-                    isPriority={index < 3}
-                  />
-                ))}
-              </div>
+              {/* Content based on view mode */}
+              {currentView === "map" ? (
+                <MapView coffeeDates={sortedCoffeeDates} className="w-full" />
+              ) : (
+                /* Coffee Dates Grid - Responsive: 1 col mobile, 2 cols tablet, 3 cols desktop */
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+                  {sortedCoffeeDates.map((coffeeDate, index) => (
+                    <MemoryCard
+                      key={coffeeDate.id}
+                      coffeeDate={coffeeDate}
+                      onEdit={handleEdit}
+                      onDelete={handleDeleteClick}
+                      isAuthenticated={isAuthenticated}
+                      isPriority={index < 3}
+                    />
+                  ))}
+                </div>
+              )}
             </>
           )}
         </main>
