@@ -8,8 +8,12 @@ import { AuthStatus, useAuth } from "@/features/auth";
 import {
   DeleteConfirmationDialog,
   MemoryCard,
+  SortDropdown,
 } from "@/features/coffee-dates/components";
-import { useCoffeeDateManagement } from "@/features/coffee-dates/hooks";
+import {
+  useCoffeeDateManagement,
+  useCoffeeDateSorting,
+} from "@/features/coffee-dates/hooks";
 import { coffeeDateClientService } from "@/features/coffee-dates/services";
 import type { CoffeeDate } from "@/shared/types";
 
@@ -31,6 +35,11 @@ export function HomeContent({
 
   const { isAuthenticated } = useAuth();
   const { handleEdit, handleDelete } = useCoffeeDateManagement();
+  const { sortedCoffeeDates, currentSort, handleSortChange } =
+    useCoffeeDateSorting({
+      coffeeDates,
+      defaultSort: "visitDate-desc",
+    });
 
   const handleDeleteClick = (coffeeDateId: string) => {
     const coffeeDate = coffeeDates.find((cd) => cd.id === coffeeDateId);
@@ -123,9 +132,23 @@ export function HomeContent({
             </div>
           ) : (
             <>
+              {/* Sort Controls */}
+              <div className="flex items-center justify-between mb-6 mx-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">
+                    {sortedCoffeeDates.length} coffee date
+                    {sortedCoffeeDates.length !== 1 ? "s" : ""}
+                  </span>
+                </div>
+                <SortDropdown
+                  currentSort={currentSort}
+                  onSortChange={handleSortChange}
+                />
+              </div>
+
               {/* Coffee Dates Grid - Responsive: 1 col mobile, 2 cols tablet, 3 cols desktop */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
-                {coffeeDates.map((coffeeDate, index) => (
+                {sortedCoffeeDates.map((coffeeDate, index) => (
                   <MemoryCard
                     key={coffeeDate.id}
                     coffeeDate={coffeeDate}
