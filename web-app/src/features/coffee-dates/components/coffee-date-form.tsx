@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, ImageIcon, Loader2, Upload, X } from "lucide-react";
 import Image from "next/image";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -62,6 +62,14 @@ export function CoffeeDateForm({
 }: CoffeeDateFormProps) {
   const [dragActive, setDragActive] = useState(false);
   const [photoPreviewUrls, setPhotoPreviewUrls] = useState<string[]>([]);
+  const [defaultDate, setDefaultDate] = useState<string>("");
+
+  // Set default date on client side only to avoid hydration mismatch
+  useEffect(() => {
+    if (!initialData?.visitDate) {
+      setDefaultDate(new Date().toISOString().split("T")[0]);
+    }
+  }, [initialData?.visitDate]);
 
   const form = useForm<CoffeeDateFormData>({
     resolver: zodResolver(coffeeDateFormSchema),
@@ -73,8 +81,7 @@ export function CoffeeDateForm({
         coordinates: { lat: 0, lng: 0 },
         types: [],
       },
-      visitDate:
-        initialData?.visitDate || new Date().toISOString().split("T")[0],
+      visitDate: initialData?.visitDate || defaultDate,
       ratings: {
         coffee: initialData?.ratings?.coffee || 5,
         dessert: initialData?.ratings?.dessert,
@@ -289,7 +296,7 @@ export function CoffeeDateForm({
                         type="date"
                         {...field}
                         className="pr-10"
-                        max={new Date().toISOString().split("T")[0]}
+                        max={defaultDate || new Date().toISOString().split("T")[0]}
                       />
                       <CalendarIcon className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                     </div>

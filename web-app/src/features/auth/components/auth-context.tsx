@@ -26,6 +26,7 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasMounted, setHasMounted] = useState(false);
 
   const checkAuth = useCallback(async () => {
     try {
@@ -56,6 +57,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   useEffect(() => {
+    setHasMounted(true);
     checkAuth();
   }, [checkAuth]);
 
@@ -67,7 +69,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     checkAuth,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  // Always provide the context, but suppress hydration warnings on auth-dependent content
+  return (
+    <AuthContext.Provider value={value}>
+      <div suppressHydrationWarning={!hasMounted}>
+        {children}
+      </div>
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

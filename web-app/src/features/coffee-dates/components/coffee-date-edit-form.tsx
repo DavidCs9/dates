@@ -71,6 +71,12 @@ export function CoffeeDateEditForm({
   );
   const [removedPhotoIds, setRemovedPhotoIds] = useState<string[]>([]);
   const [newPhotoPreviewUrls, setNewPhotoPreviewUrls] = useState<string[]>([]);
+  const [maxDate, setMaxDate] = useState<string>("");
+
+  // Set max date on client side only to avoid hydration mismatch
+  useEffect(() => {
+    setMaxDate(new Date().toISOString().split("T")[0]);
+  }, []);
 
   const form = useForm<EditCoffeeDateFormData>({
     resolver: zodResolver(editCoffeeDateFormSchema),
@@ -314,7 +320,7 @@ export function CoffeeDateEditForm({
                         type="date"
                         {...field}
                         className="pr-10"
-                        max={new Date().toISOString().split("T")[0]}
+                        max={maxDate}
                       />
                       <CalendarIcon className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                     </div>
