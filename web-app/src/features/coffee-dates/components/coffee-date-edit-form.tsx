@@ -269,11 +269,11 @@ export function CoffeeDateEditForm({
   ];
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader className="px-4 sm:px-6">
+    <Card className="w-full max-w-2xl mx-auto min-h-0">
+      <CardHeader className="px-4 sm:px-6 pb-4 sm:pb-6">
         <CardTitle className="text-lg sm:text-xl">Edit Coffee Date</CardTitle>
       </CardHeader>
-      <CardContent className="px-4 sm:px-6">
+      <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
@@ -506,11 +506,11 @@ export function CoffeeDateEditForm({
             </div>
 
             {/* Submit Button */}
-            <div className="flex justify-end pt-3 sm:pt-4">
+            <div className="flex justify-end pt-4 sm:pt-6 pb-2 sm:pb-0">
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="min-w-28 sm:min-w-32 touch-manipulation"
+                className="w-full sm:w-auto min-w-28 sm:min-w-32 touch-manipulation"
               >
                 {isLoading ? (
                   <>

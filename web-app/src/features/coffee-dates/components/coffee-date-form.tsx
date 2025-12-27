@@ -240,13 +240,13 @@ export function CoffeeDateForm({
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader className="px-4 sm:px-6">
+    <Card className="w-full max-w-2xl mx-auto min-h-0">
+      <CardHeader className="px-4 sm:px-6 pb-4 sm:pb-6">
         <CardTitle className="text-lg sm:text-xl">
           Create New Coffee Date
         </CardTitle>
       </CardHeader>
-      <CardContent className="px-4 sm:px-6">
+      <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
@@ -478,11 +478,11 @@ export function CoffeeDateForm({
             />
 
             {/* Submit Button */}
-            <div className="flex justify-end pt-3 sm:pt-4">
+            <div className="flex justify-end pt-4 sm:pt-6 pb-2 sm:pb-0">
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="min-w-28 sm:min-w-32 touch-manipulation"
+                className="w-full sm:w-auto min-w-28 sm:min-w-32 touch-manipulation"
               >
                 {isLoading ? (
                   <>
@@ -497,19 +497,30 @@ export function CoffeeDateForm({
             </div>
 
             {/* Debug info for development */}
-            {process.env.NODE_ENV === 'development' && (
+            {process.env.NODE_ENV === "development" && (
               <div className="mt-4 p-3 bg-muted rounded text-xs">
                 <details>
-                  <summary className="cursor-pointer font-medium">Debug Form State</summary>
+                  <summary className="cursor-pointer font-medium">
+                    Debug Form State
+                  </summary>
                   <div className="mt-2 space-y-1">
-                    <div>Form Valid: {form.formState.isValid ? '✅' : '❌'}</div>
-                    <div>Location Selected: {form.watch('cafeInfo.placeId') ? '✅' : '❌'}</div>
-                    <div>Photos Count: {form.watch('photos').length}</div>
-                    <div>Coffee Rating: {form.watch('ratings.coffee')}</div>
+                    <div>
+                      Form Valid: {form.formState.isValid ? "✅" : "❌"}
+                    </div>
+                    <div>
+                      Location Selected:{" "}
+                      {form.watch("cafeInfo.placeId") ? "✅" : "❌"}
+                    </div>
+                    <div>Photos Count: {form.watch("photos").length}</div>
+                    <div>Coffee Rating: {form.watch("ratings.coffee")}</div>
                     {Object.keys(form.formState.errors).length > 0 && (
                       <div>
-                        <div className="font-medium text-destructive">Errors:</div>
-                        <pre className="text-destructive">{JSON.stringify(form.formState.errors, null, 2)}</pre>
+                        <div className="font-medium text-destructive">
+                          Errors:
+                        </div>
+                        <pre className="text-destructive">
+                          {JSON.stringify(form.formState.errors, null, 2)}
+                        </pre>
                       </div>
                     )}
                   </div>
