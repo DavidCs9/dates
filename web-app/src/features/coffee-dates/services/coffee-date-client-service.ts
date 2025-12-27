@@ -12,6 +12,31 @@ class CoffeeDateClientService {
   private readonly baseUrl = "/api/coffee-dates";
 
   /**
+   * Convert date strings back to Date objects
+   */
+  private convertDates(data: any): any {
+    if (Array.isArray(data)) {
+      return data.map((item) => this.convertDates(item));
+    }
+
+    if (data && typeof data === "object") {
+      const converted = { ...data };
+      if (converted.visitDate && typeof converted.visitDate === "string") {
+        converted.visitDate = new Date(converted.visitDate);
+      }
+      if (converted.createdAt && typeof converted.createdAt === "string") {
+        converted.createdAt = new Date(converted.createdAt);
+      }
+      if (converted.updatedAt && typeof converted.updatedAt === "string") {
+        converted.updatedAt = new Date(converted.updatedAt);
+      }
+      return converted;
+    }
+
+    return data;
+  }
+
+  /**
    * Get all coffee dates
    */
   async getAll(): Promise<CoffeeDate[]> {
@@ -21,7 +46,8 @@ class CoffeeDateClientService {
       throw new Error(`Failed to fetch coffee dates: ${response.statusText}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    return this.convertDates(data);
   }
 
   /**
@@ -38,7 +64,8 @@ class CoffeeDateClientService {
       throw new Error(`Failed to fetch coffee date: ${response.statusText}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    return this.convertDates(data);
   }
 
   /**
@@ -64,7 +91,8 @@ class CoffeeDateClientService {
       );
     }
 
-    return response.json();
+    const result = await response.json();
+    return this.convertDates(result);
   }
 
   /**
@@ -87,7 +115,8 @@ class CoffeeDateClientService {
       );
     }
 
-    return response.json();
+    const result = await response.json();
+    return this.convertDates(result);
   }
 
   /**
