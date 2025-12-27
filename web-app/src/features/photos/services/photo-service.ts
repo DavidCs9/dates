@@ -20,8 +20,13 @@ import type { PhotoService as IPhotoService } from "../types";
  * Service for managing photo storage and operations
  */
 export class PhotoService implements IPhotoService {
-  private readonly photosTable = AWS_CONFIG.PHOTOS_TABLE;
-  private readonly bucketName = AWS_CONFIG.S3_BUCKET_NAME;
+  private get photosTable() {
+    return AWS_CONFIG.PHOTOS_TABLE;
+  }
+
+  private get bucketName() {
+    return AWS_CONFIG.S3_BUCKET_NAME;
+  }
   private readonly maxFileSize = 10 * 1024 * 1024; // 10MB
   private readonly allowedMimeTypes = ["image/jpeg", "image/png", "image/webp"];
   private readonly thumbnailSize = { width: 400, height: 400 };

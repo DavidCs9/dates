@@ -1,28 +1,67 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { S3Client } from "@aws-sdk/client-s3";
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { getRequiredEnv } from "./env";
 
-// AWS Configuration
-const awsConfig = {
-  region: process.env.AWS_REGION || "us-east-1",
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
+// Lazy initialization to ensure environment variables are loaded
+let s3ClientInstance: S3Client | null = null;
+let docClientInstance: DynamoDBDocumentClient | null = null;
+let awsConfigInstance: any | null = null;
+
+function initializeAWSConfig() {
+  if (awsConfigInstance) return awsConfigInstance;
+
+  awsConfigInstance = {
+    region: getRequiredEnv("AWS_REGION"),
+    credentials: {
+      accessKeyId: getRequiredEnv("AWS_ACCESS_KEY_ID"),
+      secretAccessKey: getRequiredEnv("AWS_SECRET_ACCESS_KEY"),
+    },
+  };
+
+  return awsConfigInstance;
+}
+
+// S3 Client with lazy initialization
+export function getS3Client(): S3Client {
+  if (!s3ClientInstance) {
+    const awsConfig = initializeAWSConfig();
+    s3ClientInstance = new S3Client(awsConfig);
+  }
+  return s3ClientInstance;
+}
+
+// DynamoDB Document Client with lazy initialization
+export function getDocClient(): DynamoDBDocumentClient {
+  if (!docClientInstance) {
+    const awsConfig = initializeAWSConfig();
+    const dynamoDBClient = new DynamoDBClient(awsConfig);
+    docClientInstance = DynamoDBDocumentClient.from(dynamoDBClient);
+  }
+  return docClientInstance;
+}
+
+// For backward compatibility, export the clients directly
+export const s3Client = new Proxy({} as S3Client, {
+  get(target, prop) {
+    return getS3Client()[prop as keyof S3Client];
   },
-};
+});
 
-// S3 Client
-export const s3Client = new S3Client(awsConfig);
+export const docClient = new Proxy({} as DynamoDBDocumentClient, {
+  get(target, prop) {
+    return getDocClient()[prop as keyof DynamoDBDocumentClient];
+  },
+});
 
-// DynamoDB Clients
-const dynamoDBClient = new DynamoDBClient(awsConfig);
-export const docClient = DynamoDBDocumentClient.from(dynamoDBClient);
-
-// Configuration constants
+// Configuration constants with lazy initialization
 export const AWS_CONFIG = {
-  S3_BUCKET_NAME: process.env.S3_BUCKET_NAME || "coffee-date-chronicles-photos",
-  DYNAMODB_TABLE_PREFIX:
-    process.env.DYNAMODB_TABLE_PREFIX || "coffee-date-chronicles",
+  get S3_BUCKET_NAME() {
+    return getRequiredEnv("S3_BUCKET_NAME");
+  },
+  get DYNAMODB_TABLE_PREFIX() {
+    return getRequiredEnv("DYNAMODB_TABLE_PREFIX");
+  },
   get COFFEE_DATES_TABLE() {
     return `${this.DYNAMODB_TABLE_PREFIX}-coffee-dates`;
   },
@@ -30,24 +69,3 @@ export const AWS_CONFIG = {
     return `${this.DYNAMODB_TABLE_PREFIX}-photos`;
   },
 } as const;
-
-// Validate AWS configuration
-export function validateAWSConfig(): void {
-  const requiredEnvVars = [
-    "AWS_REGION",
-    "AWS_ACCESS_KEY_ID",
-    "AWS_SECRET_ACCESS_KEY",
-    "S3_BUCKET_NAME",
-    "DYNAMODB_TABLE_PREFIX",
-  ];
-
-  const missingVars = requiredEnvVars.filter(
-    (varName) => !process.env[varName],
-  );
-
-  if (missingVars.length > 0) {
-    console.warn(
-      `Missing AWS environment variables: ${missingVars.join(", ")}`,
-    );
-  }
-}
