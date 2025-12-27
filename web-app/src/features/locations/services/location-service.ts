@@ -1,3 +1,4 @@
+import { getRequiredEnv } from "@/shared/lib";
 import type { CafeInfo, LocationService, PlaceSearchResult } from "../types";
 
 class GoogleMapsLocationService implements LocationService {
@@ -7,15 +8,7 @@ class GoogleMapsLocationService implements LocationService {
   private apiKey: string;
 
   constructor() {
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-
-    if (!apiKey) {
-      throw new Error(
-        "Google Maps API key is not configured. Please set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY environment variable.",
-      );
-    }
-
-    this.apiKey = apiKey;
+    this.apiKey = getRequiredEnv("NEXT_PUBLIC_GOOGLE_MAPS_API_KEY");
   }
 
   private async initialize(): Promise<void> {

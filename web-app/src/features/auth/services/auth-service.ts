@@ -1,4 +1,4 @@
-import { ENV } from "@/shared/lib/env";
+import { getOptionalEnv } from "@/shared/lib/env";
 import type { AuthResult, AuthService } from "../types";
 
 // Simple session storage using in-memory store
@@ -9,9 +9,9 @@ export class SimpleAuthService implements AuthService {
   private readonly password: string;
 
   constructor() {
-    this.password = ENV.AUTH_PASSWORD || "dev-password";
+    this.password = getOptionalEnv("AUTH_PASSWORD", "dev-password");
 
-    if (!ENV.AUTH_PASSWORD) {
+    if (!process.env.AUTH_PASSWORD) {
       console.warn("AUTH_PASSWORD should be configured for production");
     }
   }
