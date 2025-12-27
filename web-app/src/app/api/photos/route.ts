@@ -1,11 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { withAuth } from "@/features/auth/utils/auth-middleware";
 import { photoService } from "@/features/photos/services/server";
-import {
-  AuthenticationError,
-  getErrorMessage,
-  ValidationError,
-} from "@/shared/lib/errors";
+import { AuthenticationError, ValidationError } from "@/shared/lib/errors";
 
 /**
  * POST /api/photos - Upload photos

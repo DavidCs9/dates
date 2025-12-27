@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2, Trash2 } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -65,15 +66,18 @@ export function DeleteConfirmationDialog({
         <div className="py-4">
           <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
             {coffeeDate.photos.length > 0 && (
-              <img
-                src={
-                  coffeeDate.photos.find(
-                    (p) => p.id === coffeeDate.primaryPhotoId,
-                  )?.thumbnailUrl || coffeeDate.photos[0].thumbnailUrl
-                }
-                alt={coffeeDate.cafeInfo.name}
-                className="w-16 h-16 object-cover rounded-md flex-shrink-0"
-              />
+              <div className="relative w-16 h-16 flex-shrink-0">
+                <Image
+                  src={
+                    coffeeDate.photos.find(
+                      (p) => p.id === coffeeDate.primaryPhotoId,
+                    )?.thumbnailUrl || coffeeDate.photos[0].thumbnailUrl
+                  }
+                  alt={coffeeDate.cafeInfo.name}
+                  fill
+                  className="object-cover rounded-md"
+                />
+              </div>
             )}
             <div className="min-w-0 flex-1">
               <h3 className="font-medium truncate">

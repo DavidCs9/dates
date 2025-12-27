@@ -17,6 +17,8 @@ export interface MemoryCardProps {
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   isAuthenticated?: boolean;
+  /** Whether this card should have priority image loading (for above-the-fold content) */
+  isPriority?: boolean;
 }
 
 export * from "@/shared/types";
