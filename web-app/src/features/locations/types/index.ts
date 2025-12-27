@@ -1,7 +1,10 @@
 import type { CafeInfo, PlaceSearchResult } from "@/shared/types";
 
 export interface LocationService {
-  searchPlaces(query: string): Promise<PlaceSearchResult[]>;
+  searchPlaces(
+    query: string,
+    location?: { lat: number; lng: number },
+  ): Promise<PlaceSearchResult[]>;
   getPlaceDetails(placeId: string): Promise<CafeInfo>;
   geocodeAddress(address: string): Promise<CafeInfo>;
 }

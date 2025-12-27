@@ -43,8 +43,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       );
     }
 
+    // Parse optional location parameters for location-biased search
+    const lat = searchParams.get("lat");
+    const lng = searchParams.get("lng");
+    const location =
+      lat && lng ? { lat: parseFloat(lat), lng: parseFloat(lng) } : undefined;
+
     const locationService = new ServerLocationService();
-    const results = await locationService.searchPlaces(trimmedQuery);
+    const results = await locationService.searchPlaces(trimmedQuery, location);
 
     return NextResponse.json({
       results,

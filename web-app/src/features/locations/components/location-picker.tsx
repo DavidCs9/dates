@@ -28,6 +28,25 @@ export function LocationPicker({
 
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const userLocationRef = useRef<{ lat: number; lng: number } | null>(null);
+
+  // Get user's location on mount for location-biased search (using ref to avoid re-renders)
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          userLocationRef.current = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+        },
+        (err) => {
+          console.log("Geolocation not available:", err.message);
+        },
+      );
+    }
+  }, []);
 
   // Handle clicks outside to close dropdown
   useEffect(() => {
@@ -51,9 +70,13 @@ export function LocationPicker({
     setError(null);
 
     try {
-      const response = await fetch(
-        `/api/locations/search?q=${encodeURIComponent(searchQuery)}`,
-      );
+      // Build URL with optional location bias for better local results
+      let url = `/api/locations/search?q=${encodeURIComponent(searchQuery)}`;
+      if (userLocationRef.current) {
+        url += `&lat=${userLocationRef.current.lat}&lng=${userLocationRef.current.lng}`;
+      }
+
+      const response = await fetch(url);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -141,6 +164,7 @@ export function LocationPicker({
       <div className="relative">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
+          ref={inputRef}
           type="text"
           placeholder={placeholder}
           value={query}
@@ -154,7 +178,6 @@ export function LocationPicker({
             "pl-10 pr-10",
             error && "border-destructive focus-visible:ring-destructive/20",
           )}
-          disabled={isLoading}
         />
         {isLoading && (
           <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />

@@ -9,7 +9,10 @@ class ServerLocationService implements LocationService {
     this.apiKey = getRequiredEnv("NEXT_PUBLIC_GOOGLE_MAPS_API_KEY");
   }
 
-  async searchPlaces(query: string): Promise<PlaceSearchResult[]> {
+  async searchPlaces(
+    query: string,
+    location?: { lat: number; lng: number },
+  ): Promise<PlaceSearchResult[]> {
     try {
       // Use a more targeted search query to reduce duplicates
       const searchQuery =
@@ -17,10 +20,25 @@ class ServerLocationService implements LocationService {
         query.toLowerCase().includes("coffee")
           ? query
           : `${query} cafe`;
-      const url = `${this.baseUrl}/place/textsearch/json?query=${encodeURIComponent(searchQuery)}&type=cafe&key=${this.apiKey}`;
+
+      // Build URL - don't use type filter with location bias as it's too restrictive
+      let url = `${this.baseUrl}/place/textsearch/json?query=${encodeURIComponent(searchQuery)}&key=${this.apiKey}`;
+
+      // Add location bias if coordinates provided - this ensures results are relevant to user's location
+      if (location) {
+        url += `&location=${location.lat},${location.lng}&radius=50000`;
+      } else {
+        // Only use type filter when no location bias (less restrictive)
+        url += "&type=cafe";
+      }
 
       const response = await fetch(url);
       const data = await response.json();
+
+      // Handle ZERO_RESULTS gracefully - it's not an error, just no matches
+      if (data.status === "ZERO_RESULTS") {
+        return [];
+      }
 
       if (data.status !== "OK") {
         console.error("Places search failed:", data.status, data.error_message);

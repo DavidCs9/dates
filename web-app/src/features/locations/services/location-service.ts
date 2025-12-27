@@ -52,7 +52,10 @@ class GoogleMapsLocationService implements LocationService {
     });
   }
 
-  async searchPlaces(query: string): Promise<PlaceSearchResult[]> {
+  async searchPlaces(
+    query: string,
+    location?: { lat: number; lng: number },
+  ): Promise<PlaceSearchResult[]> {
     await this.initialize();
 
     if (!this.placesService) {
@@ -63,6 +66,10 @@ class GoogleMapsLocationService implements LocationService {
       const request: google.maps.places.TextSearchRequest = {
         query: `${query} cafe coffee shop`,
         type: "cafe",
+        ...(location && {
+          location: new google.maps.LatLng(location.lat, location.lng),
+          radius: 50000,
+        }),
       };
 
       if (!this.placesService) {
