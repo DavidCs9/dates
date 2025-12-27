@@ -48,33 +48,36 @@ export function HomeContent({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6 lg:py-8">
         {/* Header with Authentication Status */}
-        <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-12">
-          <div className="text-center sm:text-left">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
-              Coffee Date Chronicles
-            </h1>
-            <p className="text-sm sm:text-base lg:text-lg text-gray-600 dark:text-gray-300">
-              Your personal digital scrapbook for coffee adventures
-            </p>
-          </div>
-
-          <div className="flex items-center justify-center sm:justify-end gap-2 sm:gap-4">
-            {isAuthenticated && (
-              <Button
-                asChild
-                size="sm"
-                className="sm:size-default touch-manipulation"
-              >
-                <Link href="/create">
-                  <Plus className="h-4 w-4" />
-                  <span className="hidden sm:inline">New Coffee Date</span>
-                  <span className="sm:hidden">New</span>
-                </Link>
-              </Button>
-            )}
-            <AuthStatus variant="full" />
+        <header className="mb-6 sm:mb-8 lg:mb-12">
+          {/* Header with title, new button, and auth button */}
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-lg sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-1 truncate">
+                Coffee Date Chronicles
+              </h1>
+              <p className="text-xs sm:text-base lg:text-lg text-gray-600 dark:text-gray-300">
+                Your personal digital scrapbook for coffee adventures
+              </p>
+            </div>
+            
+            {/* Action buttons in top right */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {isAuthenticated && (
+                <Button
+                  asChild
+                  size="sm"
+                  className="touch-manipulation"
+                >
+                  <Link href="/create">
+                    <Plus className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">New</span>
+                  </Link>
+                </Button>
+              )}
+              <AuthStatus variant="button" />
+            </div>
           </div>
         </header>
 
@@ -137,18 +140,6 @@ export function HomeContent({
                   />
                 ))}
               </div>
-
-              {/* Add New Button for Authenticated Users */}
-              {isAuthenticated && (
-                <div className="flex justify-center mt-6 sm:mt-8">
-                  <Button asChild size="lg" className="touch-manipulation">
-                    <Link href="/create">
-                      <Plus className="h-5 w-5" />
-                      Add Another Coffee Date
-                    </Link>
-                  </Button>
-                </div>
-              )}
             </>
           )}
         </main>
