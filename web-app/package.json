@@ -38,7 +38,8 @@
   },
   "optionalDependencies": {
     "@tailwindcss/oxide-linux-x64-gnu": "^4.1.0",
-    "lightningcss-linux-x64-gnu": "^1.30.0"
+    "lightningcss-linux-x64-gnu": "^1.30.0",
+    "@img/sharp-linux-x64": "^0.34.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
