@@ -61,15 +61,11 @@ export function HomeContent({
                 Your personal digital scrapbook for coffee adventures
               </p>
             </div>
-            
+
             {/* Action buttons in top right */}
             <div className="flex items-center gap-2 flex-shrink-0">
               {isAuthenticated && (
-                <Button
-                  asChild
-                  size="sm"
-                  className="touch-manipulation"
-                >
+                <Button asChild size="sm" className="touch-manipulation">
                   <Link href="/create">
                     <Plus className="h-4 w-4 sm:mr-2" />
                     <span className="hidden sm:inline">New</span>
