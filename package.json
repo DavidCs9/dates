@@ -6,14 +6,13 @@
     "web-app"
   ],
   "scripts": {
-    "prepare": "is-ci || husky",
+    "prepare": "command -v husky >/dev/null 2>&1 && husky || echo 'Husky not found, skipping'",
     "build": "cd web-app && npm run build",
     "lint": "cd web-app && npm run lint",
     "lint:precommit": "cd web-app && npm run lint:precommit",
     "format": "cd web-app && npm run format"
   },
   "devDependencies": {
-    "husky": "^9.0.11",
-    "is-ci": "^3.0.1"
+    "husky": "^9.0.11"
   }
 }
