@@ -12,9 +12,11 @@ class ServerLocationService implements LocationService {
   async searchPlaces(query: string): Promise<PlaceSearchResult[]> {
     try {
       // Use a more targeted search query to reduce duplicates
-      const searchQuery = query.toLowerCase().includes('cafe') || query.toLowerCase().includes('coffee') 
-        ? query 
-        : `${query} cafe`;
+      const searchQuery =
+        query.toLowerCase().includes("cafe") ||
+        query.toLowerCase().includes("coffee")
+          ? query
+          : `${query} cafe`;
       const url = `${this.baseUrl}/place/textsearch/json?query=${encodeURIComponent(searchQuery)}&type=cafe&key=${this.apiKey}`;
 
       const response = await fetch(url);

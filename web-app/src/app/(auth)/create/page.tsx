@@ -51,12 +51,14 @@ export default function CreateCoffeeDatePage() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <CoffeeDateForm
-        onSubmit={handleSubmit}
-        isLoading={isLoading}
-        submitLabel="Create Coffee Date"
-      />
+    <div className="min-h-screen flex flex-col">
+      <div className="flex-1 container mx-auto py-4 sm:py-8 px-4 overflow-y-auto">
+        <CoffeeDateForm
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
+          submitLabel="Create Coffee Date"
+        />
+      </div>
     </div>
   );
 }

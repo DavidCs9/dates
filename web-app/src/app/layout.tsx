@@ -20,6 +20,11 @@ export const metadata: Metadata = {
     "A personal digital scrapbook for documenting coffee adventures between two people",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
