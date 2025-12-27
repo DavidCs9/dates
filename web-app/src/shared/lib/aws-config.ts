@@ -43,13 +43,13 @@ export function getDocClient(): DynamoDBDocumentClient {
 
 // For backward compatibility, export the clients directly
 export const s3Client = new Proxy({} as S3Client, {
-  get(target, prop) {
+  get(_target, prop) {
     return getS3Client()[prop as keyof S3Client];
   },
 });
 
 export const docClient = new Proxy({} as DynamoDBDocumentClient, {
-  get(target, prop) {
+  get(_target, prop) {
     return getDocClient()[prop as keyof DynamoDBDocumentClient];
   },
 });

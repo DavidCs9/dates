@@ -2,7 +2,6 @@ import { type NextRequest, NextResponse } from "next/server";
 import { getLocationService } from "@/features/locations/services";
 import {
   ExternalServiceError,
-  getErrorMessage,
   NotFoundError,
   ValidationError,
 } from "@/shared/lib/errors";

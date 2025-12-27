@@ -1,12 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { withAuth } from "@/features/auth/utils/auth-middleware";
 import { coffeeDateService } from "@/features/coffee-dates/services/coffee-date-service";
-import {
-  AuthenticationError,
-  getErrorMessage,
-  NotFoundError,
-  ValidationError,
-} from "@/shared/lib/errors";
+import { AuthenticationError, ValidationError } from "@/shared/lib/errors";
 import type { CreateCoffeeDateRequest } from "@/shared/types";
 
 /**

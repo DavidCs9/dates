@@ -2,12 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { withAuth } from "@/features/auth/utils/auth-middleware";
 import { coffeeDateService } from "@/features/coffee-dates/services/coffee-date-service";
 import { ItemNotFoundError } from "@/shared/lib";
-import {
-  AuthenticationError,
-  getErrorMessage,
-  NotFoundError,
-  ValidationError,
-} from "@/shared/lib/errors";
+import { AuthenticationError, ValidationError } from "@/shared/lib/errors";
 import type { UpdateCoffeeDateRequest } from "@/shared/types";
 
 interface RouteParams {
@@ -21,7 +16,7 @@ interface RouteParams {
  * Public endpoint (no authentication required)
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: RouteParams,
 ): Promise<NextResponse> {
   const { id } = await params;
@@ -132,7 +127,7 @@ export const PUT = withAuth(
  */
 export const DELETE = withAuth(
   async (
-    request: NextRequest,
+    _request: NextRequest,
     { params }: RouteParams,
   ): Promise<NextResponse> => {
     const { id } = await params;

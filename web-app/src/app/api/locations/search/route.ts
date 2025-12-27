@@ -1,10 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getLocationService } from "@/features/locations/services";
-import {
-  ExternalServiceError,
-  getErrorMessage,
-  ValidationError,
-} from "@/shared/lib/errors";
+import { ExternalServiceError, ValidationError } from "@/shared/lib/errors";
 
 /**
  * GET /api/locations/search - Search for places using Google Maps API
