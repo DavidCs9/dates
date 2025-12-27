@@ -8,57 +8,66 @@ import {
 } from "@/shared/lib/errors";
 
 /**
- * GET /api/locations/details - Get place details using Google Maps API
+ * GET /api/locations/geocode - Geocode an address using Google Maps API
  * Public endpoint (no authentication required)
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const { searchParams } = new URL(request.url);
-    const placeId = searchParams.get("placeId");
+    const address = searchParams.get("address");
 
-    // Validate placeId parameter
-    if (!placeId) {
+    // Validate address parameter
+    if (!address) {
       return NextResponse.json(
         {
-          error: 'Query parameter "placeId" is required',
-          field: "placeId",
+          error: 'Query parameter "address" is required',
+          field: "address",
         },
         { status: 400 },
       );
     }
 
-    const trimmedPlaceId = placeId.trim();
-    if (trimmedPlaceId.length === 0) {
+    const trimmedAddress = address.trim();
+    if (trimmedAddress.length === 0) {
       return NextResponse.json(
         {
-          error: "Place ID cannot be empty",
-          field: "placeId",
+          error: "Address cannot be empty",
+          field: "address",
         },
         { status: 400 },
       );
     }
 
-    // Basic validation for Google Place ID format
-    // Google Place IDs typically start with certain prefixes and have specific patterns
-    if (trimmedPlaceId.length < 10 || trimmedPlaceId.length > 200) {
+    if (trimmedAddress.length < 3) {
       return NextResponse.json(
         {
-          error: "Invalid Place ID format",
-          field: "placeId",
+          error: "Address must be at least 3 characters long",
+          field: "address",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (trimmedAddress.length > 500) {
+      return NextResponse.json(
+        {
+          error: "Address must be less than 500 characters",
+          field: "address",
         },
         { status: 400 },
       );
     }
 
     const locationService = getLocationService();
-    const placeDetails = await locationService.getPlaceDetails(trimmedPlaceId);
+    const geocodedLocation =
+      await locationService.geocodeAddress(trimmedAddress);
 
     return NextResponse.json({
-      place: placeDetails,
-      placeId: trimmedPlaceId,
+      location: geocodedLocation,
+      originalAddress: trimmedAddress,
     });
   } catch (error) {
-    console.error("Place details error:", error);
+    console.error("Geocoding error:", error);
 
     if (error instanceof ValidationError) {
       return NextResponse.json(
@@ -75,7 +84,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     if (error instanceof NotFoundError) {
-      return NextResponse.json({ error: "Place not found" }, { status: 404 });
+      return NextResponse.json({ error: "Address not found" }, { status: 404 });
     }
 
     if (error instanceof Error) {
@@ -97,30 +106,33 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         );
       }
 
-      if (
-        error.message.includes("NOT_FOUND") ||
-        error.message.includes("INVALID_REQUEST")
-      ) {
-        return NextResponse.json({ error: "Place not found" }, { status: 404 });
-      }
-
       if (error.message.includes("ZERO_RESULTS")) {
         return NextResponse.json(
-          { error: "No details available for this place" },
+          { error: "No location found for the provided address" },
           { status: 404 },
         );
       }
 
-      if (error.message.includes("Incomplete place details")) {
+      if (error.message.includes("INVALID_REQUEST")) {
         return NextResponse.json(
-          { error: "Incomplete place information received from Google Maps" },
-          { status: 502 },
+          {
+            error: "Invalid address format",
+            field: "address",
+          },
+          { status: 400 },
+        );
+      }
+
+      if (error.message.includes("No location found")) {
+        return NextResponse.json(
+          { error: "Address could not be geocoded" },
+          { status: 404 },
         );
       }
     }
 
     return NextResponse.json(
-      { error: "Failed to get place details" },
+      { error: "Failed to geocode address" },
       { status: 500 },
     );
   }
