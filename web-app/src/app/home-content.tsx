@@ -141,16 +141,16 @@ export function HomeContent({
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <ViewToggle
-                    currentView={currentView}
-                    onViewChange={setCurrentView}
-                  />
                   {currentView === "grid" && (
                     <SortDropdown
                       currentSort={currentSort}
                       onSortChange={handleSortChange}
                     />
                   )}
+                  <ViewToggle
+                    currentView={currentView}
+                    onViewChange={setCurrentView}
+                  />
                 </div>
               </div>
 

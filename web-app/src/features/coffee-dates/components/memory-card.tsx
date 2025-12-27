@@ -75,9 +75,15 @@ export function MemoryCard({
         {/* Location Information */}
         <div className="flex items-start gap-2 text-xs sm:text-sm text-muted-foreground">
           <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-          <span className="line-clamp-2 break-words">
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${coffeeDate.cafeInfo.coordinates.lat},${coffeeDate.cafeInfo.coordinates.lng}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="line-clamp-2 break-words hover:text-primary hover:underline transition-colors cursor-pointer"
+            aria-label={`Open ${coffeeDate.cafeInfo.name} in Google Maps`}
+          >
             {coffeeDate.cafeInfo.formattedAddress}
-          </span>
+          </a>
         </div>
 
         {/* Visit Date */}
