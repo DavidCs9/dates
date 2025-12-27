@@ -33,6 +33,9 @@ export class CoffeeDateService implements ICoffeeDateService {
    */
   async getAll(): Promise<CoffeeDate[]> {
     try {
+      console.log(`[CoffeeDateService] Querying table: ${this.coffeeDatesTable}`);
+      console.log(`[CoffeeDateService] GSI1PK: COFFEE_DATES`);
+      
       const records = await DataAccessLayer.queryGSI<CoffeeDateRecord>(
         this.coffeeDatesTable,
         "GSI1",
@@ -40,6 +43,8 @@ export class CoffeeDateService implements ICoffeeDateService {
         undefined,
         false, // Sort descending (newest first)
       );
+      
+      console.log(`[CoffeeDateService] Found ${records.length} records:`, records.map(r => ({ id: r.id, GSI1PK: r.GSI1PK })));
 
       const coffeeDates = await Promise.all(
         records.map((record) => this.recordToCoffeeDate(record)),

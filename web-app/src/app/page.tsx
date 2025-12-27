@@ -2,6 +2,8 @@ import { coffeeDateService } from "@/features/coffee-dates/services";
 import type { CoffeeDate } from "@/shared/types";
 import { HomeContent } from "./home-content";
 
+export const revalidate = 0; // Disable caching - always fetch fresh data
+
 export default async function Home() {
   let coffeeDates: CoffeeDate[] = [];
   let error: string | null = null;
