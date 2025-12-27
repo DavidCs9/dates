@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { CoffeeDateForm } from "@/features/coffee-dates/components";
-import { coffeeDateService } from "@/features/coffee-dates/services";
+import { coffeeDateClientService } from "@/features/coffee-dates/services";
 import { photoClientService } from "@/features/photos/services/client";
 import type { CreateCoffeeDateRequest } from "@/shared/types";
 
@@ -17,7 +17,7 @@ export default function CreateCoffeeDatePage() {
 
     try {
       // First, create the coffee date without photos
-      const coffeeDate = await coffeeDateService.create({
+      const coffeeDate = await coffeeDateClientService.create({
         ...data,
         photos: [], // We'll handle photos separately
         primaryPhotoIndex: 0,
@@ -34,7 +34,7 @@ export default function CreateCoffeeDatePage() {
         if (uploadedPhotos.length > 0) {
           const primaryPhotoId =
             uploadedPhotos[data.primaryPhotoIndex]?.id || uploadedPhotos[0].id;
-          await coffeeDateService.update(coffeeDate.id, {
+          await coffeeDateClientService.update(coffeeDate.id, {
             primaryPhotoId,
           });
         }

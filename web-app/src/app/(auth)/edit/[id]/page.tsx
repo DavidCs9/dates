@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { CoffeeDateEditForm } from "@/features/coffee-dates/components";
-import { coffeeDateService } from "@/features/coffee-dates/services";
+import { coffeeDateClientService } from "@/features/coffee-dates/services";
 import { photoClientService } from "@/features/photos/services/client";
 import { Loading } from "@/shared/components";
 import type { CoffeeDate, CreateCoffeeDateRequest } from "@/shared/types";
@@ -40,7 +40,7 @@ export default function EditCoffeeDatePage({
         setIsLoading(true);
         setError(null);
 
-        const data = await coffeeDateService.getById(resolvedParams.id);
+        const data = await coffeeDateClientService.getById(resolvedParams.id);
         if (!data) {
           setError("Coffee date not found");
           return;
@@ -76,7 +76,7 @@ export default function EditCoffeeDatePage({
       }
 
       // Update basic coffee date information
-      await coffeeDateService.update(coffeeDate.id, {
+      await coffeeDateClientService.update(coffeeDate.id, {
         cafeInfo: data.cafeInfo,
         ratings: data.ratings,
         visitDate: data.visitDate,
@@ -97,7 +97,7 @@ export default function EditCoffeeDatePage({
 
           // If no existing photos remain, set the first new photo as primary
           if (remainingExistingPhotos.length === 0) {
-            await coffeeDateService.update(coffeeDate.id, {
+            await coffeeDateClientService.update(coffeeDate.id, {
               primaryPhotoId: uploadedPhotos[0].id,
             });
           }
