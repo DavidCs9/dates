@@ -72,9 +72,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Always provide the context, but suppress hydration warnings on auth-dependent content
   return (
     <AuthContext.Provider value={value}>
-      <div suppressHydrationWarning={!hasMounted}>
-        {children}
-      </div>
+      <div suppressHydrationWarning={!hasMounted}>{children}</div>
     </AuthContext.Provider>
   );
 }
