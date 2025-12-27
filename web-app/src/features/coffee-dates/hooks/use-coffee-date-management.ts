@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { photoClientService } from "@/features/photos/services/client";
-import { coffeeDateService } from "../services";
+import { coffeeDateClientService } from "../services";
 
 export function useCoffeeDateManagement() {
   const router = useRouter();
@@ -19,7 +19,7 @@ export function useCoffeeDateManagement() {
 
     try {
       // Get the coffee date to access its photos
-      const coffeeDate = await coffeeDateService.getById(coffeeDateId);
+      const coffeeDate = await coffeeDateClientService.getById(coffeeDateId);
 
       if (!coffeeDate) {
         throw new Error("Coffee date not found");
@@ -33,7 +33,7 @@ export function useCoffeeDateManagement() {
       }
 
       // Delete the coffee date (this will also clean up DynamoDB photo records)
-      await coffeeDateService.delete(coffeeDateId);
+      await coffeeDateClientService.delete(coffeeDateId);
 
       toast.success("Coffee date deleted successfully");
 
