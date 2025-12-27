@@ -10,7 +10,7 @@ import {
   MemoryCard,
 } from "@/features/coffee-dates/components";
 import { useCoffeeDateManagement } from "@/features/coffee-dates/hooks";
-import { coffeeDateService } from "@/features/coffee-dates/services";
+import { coffeeDateClientService } from "@/features/coffee-dates/services";
 import type { CoffeeDate } from "@/shared/types";
 
 interface HomeContentProps {
@@ -42,7 +42,7 @@ export function HomeContent({
 
   const handleDeleteConfirm = async (coffeeDateId: string) => {
     await handleDelete(coffeeDateId);
-    const updatedCoffeeDates = await coffeeDateService.getAll();
+    const updatedCoffeeDates = await coffeeDateClientService.getAll();
     setCoffeeDates(updatedCoffeeDates);
   };
 
