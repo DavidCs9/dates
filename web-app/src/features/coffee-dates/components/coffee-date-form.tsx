@@ -348,7 +348,7 @@ export function CoffeeDateForm({
                       <button
                         type="button"
                         className={cn(
-                          "border-2 border-dashed rounded-lg p-6 text-center transition-colors w-full",
+                          "relative border-2 border-dashed rounded-lg p-6 text-center transition-colors w-full",
                           dragActive
                             ? "border-primary bg-primary/5"
                             : "border-muted-foreground/25 hover:border-muted-foreground/50",
