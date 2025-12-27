@@ -2,11 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { withAuth } from "@/features/auth/utils/auth-middleware";
 import { photoService } from "@/features/photos/services/server";
 import { ItemNotFoundError } from "@/shared/lib";
-import {
-  AuthenticationError,
-  getErrorMessage,
-  ValidationError,
-} from "@/shared/lib/errors";
+import { AuthenticationError, ValidationError } from "@/shared/lib/errors";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -18,7 +14,7 @@ interface RouteParams {
  */
 export const DELETE = withAuth(
   async (
-    request: NextRequest,
+    _request: NextRequest,
     { params }: RouteParams,
   ): Promise<NextResponse> => {
     try {

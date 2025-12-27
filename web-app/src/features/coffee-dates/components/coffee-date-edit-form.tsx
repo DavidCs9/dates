@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon, ImageIcon, Loader2, Upload, X } from "lucide-react";
+import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -269,14 +270,14 @@ export function CoffeeDateEditForm({
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Edit Coffee Date</CardTitle>
+      <CardHeader className="px-4 sm:px-6">
+        <CardTitle className="text-lg sm:text-xl">Edit Coffee Date</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 sm:px-6">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-6"
+            className="space-y-4 sm:space-y-6"
           >
             {/* Location Selection */}
             <FormField
@@ -379,7 +380,7 @@ export function CoffeeDateEditForm({
 
               {/* Existing and New Photos */}
               {allPhotos.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-4">
                   {allPhotos.map((item) => (
                     <div
                       key={item.id}
@@ -391,34 +392,39 @@ export function CoffeeDateEditForm({
                       )}
                     >
                       <div className="aspect-square relative">
-                        <img
+                        <Image
                           src={
                             item.type === "existing"
                               ? item.photo.thumbnailUrl
                               : item.previewUrl
                           }
                           alt={`Preview ${item.id}`}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
                         />
 
                         {/* Primary Photo Badge */}
                         {item.id === watchedPrimaryPhotoId && (
-                          <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
+                          <div className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 bg-primary text-primary-foreground text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
                             Primary
                           </div>
                         )}
 
-                        {/* Action Buttons */}
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                        {/* Action Buttons - Always visible on mobile, hover on desktop */}
+                        <div className="absolute inset-0 bg-black/50 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5 sm:gap-2 p-2">
                           {item.id !== watchedPrimaryPhotoId && (
                             <Button
                               type="button"
                               size="sm"
                               variant="secondary"
                               onClick={() => setPrimaryPhoto(item.id)}
+                              className="h-7 sm:h-8 text-[10px] sm:text-xs touch-manipulation w-full max-w-[120px]"
                             >
-                              <ImageIcon className="h-4 w-4" />
-                              Set Primary
+                              <ImageIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                              <span className="hidden sm:inline">
+                                Set Primary
+                              </span>
+                              <span className="sm:hidden">Primary</span>
                             </Button>
                           )}
                           <Button
@@ -436,15 +442,16 @@ export function CoffeeDateEditForm({
                                 removeNewPhoto(index);
                               }
                             }}
+                            className="h-7 sm:h-8 text-[10px] sm:text-xs touch-manipulation w-full max-w-[120px]"
                           >
-                            <X className="h-4 w-4" />
+                            <X className="h-3 w-3 sm:h-4 sm:w-4" />
                             Remove
                           </Button>
                         </div>
                       </div>
 
-                      <div className="p-2 bg-muted/50">
-                        <p className="text-xs truncate">
+                      <div className="p-1.5 sm:p-2 bg-muted/50">
+                        <p className="text-[10px] sm:text-xs truncate">
                           {item.type === "existing"
                             ? item.photo.filename
                             : item.file.name}
@@ -499,12 +506,17 @@ export function CoffeeDateEditForm({
             </div>
 
             {/* Submit Button */}
-            <div className="flex justify-end pt-4">
-              <Button type="submit" disabled={isLoading} className="min-w-32">
+            <div className="flex justify-end pt-3 sm:pt-4">
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="min-w-28 sm:min-w-32 touch-manipulation"
+              >
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Updating...
+                    <span className="hidden sm:inline">Updating...</span>
+                    <span className="sm:hidden">Update</span>
                   </>
                 ) : (
                   "Update Coffee Date"
