@@ -184,7 +184,7 @@ export function LocationPicker({
                   <p className="font-medium text-green-900 dark:text-green-100 truncate">
                     {selectedLocation.name}
                   </p>
-                  <p 
+                  <p
                     className="text-sm text-green-700 dark:text-green-300 line-clamp-2"
                     title={selectedLocation.formattedAddress}
                   >
@@ -213,7 +213,7 @@ export function LocationPicker({
                     <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                     <div className="min-w-0 flex-1">
                       <p className="font-medium truncate">{result.name}</p>
-                      <p 
+                      <p
                         className="text-sm text-muted-foreground line-clamp-2"
                         title={result.formattedAddress}
                       >

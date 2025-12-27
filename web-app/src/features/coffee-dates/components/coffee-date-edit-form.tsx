@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -57,12 +57,14 @@ interface CoffeeDateEditFormProps {
   onSubmit: (
     data: CreateCoffeeDateRequest & { removedPhotoIds: string[] },
   ) => Promise<void>;
+  onCancel?: () => void;
   isLoading?: boolean;
 }
 
 export function CoffeeDateEditForm({
   coffeeDate,
   onSubmit,
+  onCancel,
   isLoading = false,
 }: CoffeeDateEditFormProps) {
   const [dragActive, setDragActive] = useState(false);
@@ -276,10 +278,7 @@ export function CoffeeDateEditForm({
 
   return (
     <Card className="w-full max-w-2xl mx-auto min-h-0">
-      <CardHeader className="px-4 sm:px-6 pb-4 sm:pb-6">
-        <CardTitle className="text-lg sm:text-xl">Edit Coffee Date</CardTitle>
-      </CardHeader>
-      <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+      <CardContent className="px-4 sm:px-6 py-4 sm:py-6">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
@@ -511,12 +510,23 @@ export function CoffeeDateEditForm({
               </FormDescription>
             </div>
 
-            {/* Submit Button */}
-            <div className="flex justify-end pt-4 sm:pt-6 pb-2 sm:pb-0">
+            {/* Submit and Cancel Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-end pt-4 sm:pt-6 pb-2 sm:pb-0">
+              {onCancel && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onCancel}
+                  disabled={isLoading}
+                  className="w-full sm:w-auto min-w-28 sm:min-w-32 touch-manipulation order-2 sm:order-1"
+                >
+                  Cancel
+                </Button>
+              )}
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full sm:w-auto min-w-28 sm:min-w-32 touch-manipulation"
+                className="w-full sm:w-auto min-w-28 sm:min-w-32 touch-manipulation order-1 sm:order-2"
               >
                 {isLoading ? (
                   <>

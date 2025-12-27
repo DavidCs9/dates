@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { CoffeeDateEditForm } from "@/features/coffee-dates/components";
 import { coffeeDateClientService } from "@/features/coffee-dates/services";
 import { photoClientService } from "@/features/photos/services/client";
-import { Loading } from "@/shared/components";
+import { FormHeader, Loading } from "@/shared/components";
 import type { CoffeeDate, CreateCoffeeDateRequest } from "@/shared/types";
 
 interface EditCoffeeDatePageProps {
@@ -57,6 +57,10 @@ export default function EditCoffeeDatePage({
 
     loadCoffeeDate();
   }, [resolvedParams?.id]);
+
+  const handleCancel = () => {
+    router.push("/");
+  };
 
   const handleSubmit = async (
     data: CreateCoffeeDateRequest & { removedPhotoIds: string[] },
@@ -117,6 +121,7 @@ export default function EditCoffeeDatePage({
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col">
+        <FormHeader title="Edit Coffee Date" onBack={handleCancel} />
         <div className="flex-1 container mx-auto py-4 sm:py-8 px-4 flex justify-center items-center">
           <Loading />
         </div>
@@ -127,6 +132,7 @@ export default function EditCoffeeDatePage({
   if (error) {
     return (
       <div className="min-h-screen flex flex-col">
+        <FormHeader title="Edit Coffee Date" onBack={handleCancel} />
         <div className="flex-1 container mx-auto py-4 sm:py-8 px-4 flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-destructive mb-4">Error</h1>
@@ -147,6 +153,7 @@ export default function EditCoffeeDatePage({
   if (!coffeeDate) {
     return (
       <div className="min-h-screen flex flex-col">
+        <FormHeader title="Edit Coffee Date" onBack={handleCancel} />
         <div className="flex-1 container mx-auto py-4 sm:py-8 px-4 flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Coffee Date Not Found</h1>
@@ -168,10 +175,12 @@ export default function EditCoffeeDatePage({
 
   return (
     <div className="min-h-screen flex flex-col">
+      <FormHeader title="Edit Coffee Date" onBack={handleCancel} />
       <div className="flex-1 container mx-auto py-4 sm:py-8 px-4 overflow-y-auto">
         <CoffeeDateEditForm
           coffeeDate={coffeeDate}
           onSubmit={handleSubmit}
+          onCancel={handleCancel}
           isLoading={isSaving}
         />
       </div>
