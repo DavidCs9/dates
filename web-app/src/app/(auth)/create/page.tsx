@@ -6,11 +6,16 @@ import { toast } from "sonner";
 import { CoffeeDateForm } from "@/features/coffee-dates/components";
 import { coffeeDateClientService } from "@/features/coffee-dates/services";
 import { photoClientService } from "@/features/photos/services/client";
+import { FormHeader } from "@/shared/components";
 import type { CreateCoffeeDateRequest } from "@/shared/types";
 
 export default function CreateCoffeeDatePage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleCancel = () => {
+    router.push("/");
+  };
 
   const handleSubmit = async (data: CreateCoffeeDateRequest) => {
     setIsLoading(true);
@@ -52,9 +57,11 @@ export default function CreateCoffeeDatePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <FormHeader title="Create New Coffee Date" onBack={handleCancel} />
       <div className="flex-1 container mx-auto py-4 sm:py-8 px-4 overflow-y-auto">
         <CoffeeDateForm
           onSubmit={handleSubmit}
+          onCancel={handleCancel}
           isLoading={isLoading}
           submitLabel="Create Coffee Date"
         />

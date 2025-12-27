@@ -37,8 +37,8 @@ export function useCoffeeDateManagement() {
 
       toast.success("Coffee date deleted successfully");
 
-      // Refresh the page to update the list
-      window.location.reload();
+      // Navigate back to home instead of reloading
+      router.push("/");
     } catch (error) {
       console.error("Failed to delete coffee date:", error);
       toast.error("Failed to delete coffee date. Please try again.");
