@@ -86,8 +86,10 @@ export function DeleteConfirmationDialog({
               <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
                 {coffeeDate.cafeInfo.formattedAddress}
               </p>
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                {coffeeDate.visitDate.toLocaleDateString()}
+              <p className="text-xs sm:text-sm text-muted-foreground" suppressHydrationWarning>
+                {new Date(coffeeDate.visitDate).toLocaleDateString("en-US", {
+                  timeZone: "UTC",
+                })}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
                 {coffeeDate.photos.length} photo

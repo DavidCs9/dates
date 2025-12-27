@@ -83,11 +83,12 @@ export function MemoryCard({
         {/* Visit Date */}
         <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
           <Calendar className="h-4 w-4 flex-shrink-0" />
-          <span>
+          <span suppressHydrationWarning>
             {new Date(coffeeDate.visitDate).toLocaleDateString("en-US", {
               year: "numeric",
               month: "long",
               day: "numeric",
+              timeZone: "UTC",
             })}
           </span>
         </div>
