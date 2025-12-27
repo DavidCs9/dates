@@ -49,21 +49,28 @@ export function AuthStatus({
     if (isAuthenticated) {
       return (
         <Button variant="outline" size="sm" onClick={handleLogout}>
-          <LogOut className="h-4 w-4 mr-2" />
-          Logout
+          <LogOut className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Logout</span>
         </Button>
       );
     }
 
     return showLoginButton ? (
-      <Button
-        variant="default"
-        size="sm"
-        onClick={() => setShowLoginForm(true)}
-      >
-        <LogIn className="h-4 w-4 mr-2" />
-        Login
-      </Button>
+      <>
+        <Button
+          variant="default"
+          size="sm"
+          onClick={() => setShowLoginForm(true)}
+        >
+          <LogIn className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Login</span>
+        </Button>
+        <LoginForm
+          isOpen={showLoginForm}
+          onClose={() => setShowLoginForm(false)}
+          onSuccess={handleLoginSuccess}
+        />
+      </>
     ) : null;
   }
 
